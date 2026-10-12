@@ -1,0 +1,1740 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>สมุดพัฒนาตัวเอง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@600;800&display=swap">
+<style>
+/* Layout: sticky chapter nav over one long reading column; each chapter opens with a serif title, then evidence-tagged lists, tables and small tools. */
+:root {
+  --bg: #F4F2F8;
+  --surface: #FFFFFF;
+  --surface2: #EBE7F3;
+  --ink: #1F1A2E;
+  --ink2: #5A5470;
+  --line: #D9D3E6;
+  --accent: #5B3F8C;
+  --accent-ink: #FFFFFF;
+  --soft: #E4DAF5;
+  --good: #2E7D5B;
+  --warn: #A8650F;
+  --bad: #B4413C;
+  --font-display: 'Noto Serif Thai', 'Noto Serif', Georgia, serif;
+  --font-body: 'IBM Plex Sans Thai', 'Noto Sans Thai', Tahoma, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14111C; --surface: #1D1928; --surface2: #262033; --ink: #EEEAF6; --ink2: #A9A2BF;
+    --line: #352E47; --accent: #B79BEA; --accent-ink: #1A1226; --soft: #2E2447;
+    --good: #6FD0A0; --warn: #E3B45C; --bad: #F08A84; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14111C; --surface: #1D1928; --surface2: #262033; --ink: #EEEAF6; --ink2: #A9A2BF;
+  --line: #352E47; --accent: #B79BEA; --accent-ink: #1A1226; --soft: #2E2447;
+  --good: #6FD0A0; --warn: #E3B45C; --bad: #F08A84; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.75;
+  padding-inline: 16px; padding-block: 0 48px;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.35; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1000px; margin-inline: auto; }
+
+/* nav */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin-inline: -16px; padding-inline: 16px;
+}
+.top .wrap { display: flex; align-items: center; gap: 12px; padding-block: 8px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 18px; white-space: nowrap; }
+.links { display: flex; gap: 4px; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; }
+.links::-webkit-scrollbar { display: none; }
+.links a {
+  text-decoration: none; color: var(--ink2); padding: 6px 12px; border-radius: 999px;
+  white-space: nowrap; font-size: 15px; font-weight: 500;
+}
+.links a:hover { background: var(--surface2); color: var(--ink); }
+.links a[aria-current="true"] { background: var(--accent); color: var(--accent-ink); }
+.tbtn {
+  font: inherit; font-size: 14px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap;
+}
+.tbtn:hover { border-color: var(--accent); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: center; padding-block: 48px 32px; }
+.hero > * { min-width: 0; }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.hero h1 { font-size: clamp(32px, 6vw, 52px); font-weight: 800; margin-block: 8px 16px; }
+.hero p.lead { font-size: 18px; color: var(--ink2); max-width: 36em; }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.jump a {
+  text-decoration: none; background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+  padding: 8px 14px; border-radius: 10px; font-weight: 500; font-size: 15px;
+}
+.jump a:hover { border-color: var(--accent); }
+.fig { margin: 0; }
+.fig svg { width: 100%; height: auto; max-width: 100%; display: block; }
+.fig figcaption { font-size: 14px; color: var(--ink2); margin-top: 8px; }
+
+.notice {
+  background: var(--soft); border-radius: 12px; padding: 14px 18px; font-size: 15px; color: var(--ink);
+}
+.notice b { font-weight: 600; }
+
+/* chapters */
+section.ch { padding-block: 56px 8px; scroll-margin-top: 64px; }
+.ch-head { display: grid; gap: 8px; margin-bottom: 28px; max-width: 46em; }
+.ch-head h2 { font-size: clamp(26px, 4.5vw, 38px); font-weight: 800; }
+.ch-head p { color: var(--ink2); font-size: 17px; }
+h3 { font-size: 21px; font-weight: 600; margin-block: 36px 12px; }
+h3:first-child { margin-top: 0; }
+.sub { color: var(--ink2); margin-bottom: 14px; max-width: 46em; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.grid > * { min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+.panel h4 { margin: 0 0 6px; font-size: 17px; font-weight: 600; }
+.panel p { color: var(--ink2); font-size: 15px; }
+.panel .meta { margin-top: 10px; font-size: 14px; color: var(--ink); }
+.panel .meta b { font-weight: 600; }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: -1px; }
+
+.tag {
+  display: inline-block; font-size: 12.5px; font-weight: 600; padding: 1px 10px; border-radius: 999px;
+  border: 1px solid currentColor; white-space: nowrap; line-height: 1.6;
+}
+.tag.good { color: var(--good); }
+.tag.mid { color: var(--accent); }
+.tag.low { color: var(--warn); }
+.tag.no { color: var(--bad); }
+
+.list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 14px 2px; border-bottom: 1px solid var(--line); }
+.row h4 { margin: 0; font-size: 16.5px; font-weight: 600; }
+.row p { grid-column: 1; color: var(--ink2); font-size: 15px; }
+.row .tag { grid-column: 2; grid-row: 1; align-self: start; }
+
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; color: var(--ink2); font-weight: 600; background: var(--surface2); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; min-width: 150px; }
+
+/* quiz */
+.quiz { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.q { border: 0; padding: 0; margin: 0 0 20px; min-width: 0; }
+.q legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.q label {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line);
+  border-radius: 10px; margin-bottom: 8px; cursor: pointer; font-size: 15px;
+}
+.q label:hover { border-color: var(--accent); }
+.q input { margin-top: 5px; accent-color: var(--accent); }
+.q label:has(input:checked) { background: var(--soft); border-color: var(--accent); }
+.btn {
+  font: inherit; font-weight: 600; background: var(--accent); color: var(--accent-ink);
+  border: 0; border-radius: 10px; padding: 10px 20px; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.result { margin-top: 18px; background: var(--soft); border-radius: 12px; padding: 16px 18px; }
+.result h4 { margin: 0 0 6px; font-family: var(--font-display); font-size: 19px; }
+.result ul { margin: 8px 0 0; padding-left: 20px; }
+
+/* steps */
+.steps { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; gap: 12px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
+.steps li::before {
+  content: counter(s); width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+  display: grid; place-items: center; font-weight: 600; font-family: var(--font-body);
+}
+.steps b { font-weight: 600; }
+.steps span { color: var(--ink2); }
+
+/* callouts */
+.dont { border-left: 4px solid var(--bad); background: var(--surface); border-radius: 0 12px 12px 0; padding: 14px 18px; }
+.dont b { color: var(--bad); }
+.dont ul, .doc ul { margin: 6px 0 0; padding-left: 20px; }
+.doc { border: 1px solid var(--accent); border-radius: 14px; padding: 16px 20px; background: var(--surface); }
+.doc h4 { margin: 0 0 4px; font-size: 17px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.two > * { min-width: 0; }
+
+/* checklist */
+.ck { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.ck > * { min-width: 0; }
+.ck .panel h4 { margin-bottom: 10px; }
+.ck label { display: flex; gap: 10px; padding: 6px 0; cursor: pointer; font-size: 15px; align-items: flex-start; }
+.ck input { margin-top: 6px; accent-color: var(--accent); width: 16px; height: 16px; flex: none; }
+.ck label:has(input:checked) span { color: var(--ink2); text-decoration: line-through; }
+.progress { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 14px; color: var(--ink2); }
+.bar { flex: 1; height: 8px; background: var(--surface2); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+
+/* hormones */
+details.h { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; }
+details.h summary {
+  cursor: pointer; list-style: none; padding: 14px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center;
+}
+details.h summary::-webkit-details-marker { display: none; }
+details.h summary::after { content: '+'; grid-column: 2; grid-row: 1 / span 2; font-size: 22px; color: var(--accent); }
+details.h[open] summary::after { content: '–'; }
+details.h summary b { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+details.h summary small { color: var(--ink2); font-size: 14px; grid-column: 1; }
+.hb { padding: 4px 18px 18px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.hb > div { min-width: 0; font-size: 15px; }
+.hb h5 { margin: 0 0 2px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.hb p { color: var(--ink); }
+
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.chart svg { width: 100%; height: auto; display: block; max-width: 100%; }
+.chart .ct { fill: var(--ink2); font-family: var(--font-body); font-size: 12.5px; }
+.chart .cl { fill: var(--ink); font-family: var(--font-body); font-size: 13.5px; font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+
+footer { max-width: 1000px; margin: 64px auto 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--ink2); font-size: 14px; }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; padding-block: 28px 20px; }
+  .brand { font-size: 16px; }
+  section.ch { padding-block: 40px 4px; }
+}
+@media (max-width: 480px) {
+  .row { grid-template-columns: minmax(0, 1fr); }
+  .row .tag { grid-column: 1; grid-row: auto; justify-self: start; }
+}
+
+/* ---- v2 additions ---- */
+.wheel { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.wheel > * { min-width: 0; }
+.radar { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.radar svg { width: 100%; height: auto; display: block; max-width: 100%; }
+.radar .rl { fill: var(--ink); font-family: var(--font-body); font-size: 13px; font-weight: 500; }
+.sliders { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 18px; }
+.sl { display: grid; grid-template-columns: 112px minmax(0, 1fr) 28px; gap: 10px; align-items: center; padding: 5px 0; font-size: 15px; }
+.sl input[type=range] { width: 100%; accent-color: var(--accent); }
+.sl output { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.focus { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 15px; }
+.chip {
+  display: inline-block; text-decoration: none; background: var(--accent); color: var(--accent-ink);
+  padding: 6px 14px; border-radius: 999px; font-weight: 600; font-size: 14px;
+}
+.chip:hover { filter: brightness(1.1); }
+.fld { display: grid; gap: 4px; font-size: 14px; color: var(--ink2); min-width: 0; }
+.fld input, .fld select {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 10px; width: 100%; min-width: 0;
+}
+.fld input:focus, .fld select:focus { border-color: var(--accent); }
+.calc { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 16px; }
+.calc .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.outs { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.outs > div { background: var(--soft); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.outs small { display: block; color: var(--ink2); font-size: 13px; line-height: 1.5; }
+.outs b { font-family: var(--font-display); font-size: 22px; font-variant-numeric: tabular-nums; font-weight: 600; }
+.ex { font-size: 13px; color: var(--ink2); }
+.tool { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 14px; justify-items: start; }
+.dial { font-family: var(--font-display); font-size: clamp(48px, 12vw, 72px); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.row-btn { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.breath {
+  width: min(210px, 60vw); aspect-ratio: 1; border-radius: 50%; background: var(--soft); border: 2px solid var(--accent);
+  display: grid; place-items: center; text-align: center; font-weight: 600; transform: scale(.6);
+  transition: transform 4s ease-in-out;
+}
+.days { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; width: 100%; }
+.days button {
+  font: inherit; font-weight: 600; padding: 10px 0; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.days button:hover { border-color: var(--accent); }
+.days button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.matrix { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.matrix > div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 15px; }
+.matrix > div b { display: block; font-family: var(--font-display); font-weight: 600; margin-bottom: 2px; }
+.matrix > div span { color: var(--ink2); font-size: 14px; }
+.kicker { font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.week td:first-child { min-width: 90px; }
+@media (max-width: 760px) {
+  .wheel { grid-template-columns: 1fr; }
+  .sl { grid-template-columns: 96px minmax(0, 1fr) 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .breath { transition: none; } }
+
+.links { position: relative; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">สมุดพัฒนาตัวเอง</div>
+    <nav class="links" aria-label="หัวข้อ">
+      <a href="#wheel" data-g="wheel">วงล้อชีวิต</a>
+      <a href="#eye" data-g="skin">ผิว</a>
+      <a href="#acne" data-g="acne">สิว</a>
+      <a href="#hormone" data-g="hormone">ฮอร์โมน</a>
+      <a href="#groom" data-g="groom">ภายนอก</a>
+      <a href="#sleep" data-g="sleep">นอน</a>
+      <a href="#food" data-g="food">อาหาร</a>
+      <a href="#move" data-g="move">ออกกำลัง</a>
+      <a href="#mind" data-g="mind">ใจ</a>
+      <a href="#habit" data-g="habit">นิสัยและเวลา</a>
+      <a href="#learn" data-g="learn">เรียนรู้</a>
+      <a href="#money" data-g="money">เงิน</a>
+      <a href="#people" data-g="people">ความสัมพันธ์</a>
+      <a href="#plan" data-g="plan">แผน 30 วัน</a>
+    </nav>
+    <button class="tbtn" id="themeBtn" type="button" aria-label="สลับธีม">ธีม: อัตโนมัติ</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero" style="grid-template-columns:1fr">
+    <div>
+      <div class="eyebrow">คู่มือพัฒนาตัวเองรอบด้าน</div>
+      <h1>พัฒนาตัวเอง เริ่มจากรู้ว่าตอนนี้อยู่ตรงไหน</h1>
+      <p class="lead">รวมทุกด้านไว้ที่เดียว ตั้งแต่ผิว ฮอร์โมน การนอน อาหาร การออกกำลังกาย ใจ นิสัยและเวลา การเรียนรู้ การเงิน ไปจนถึงความสัมพันธ์ ประเมินตัวเองก่อน แล้วเริ่มจากด้านที่อ่อนที่สุด</p>
+      <div class="jump">
+        <a href="#wheel">ประเมินวงล้อชีวิต</a>
+        <a href="#routine">ตารางดูแลผิวประจำวัน</a>
+        <a href="#acne">สิวทุกแบบบนใบหน้า</a>
+        <a href="#plan">แผน 30 วัน</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice"><b>อ่านก่อน</b> หน้านี้เป็นข้อมูลทั่วไปเพื่อความเข้าใจ ไม่ใช่การวินิจฉัยหรือคำแนะนำเฉพาะบุคคล ถ้ามีอาการที่ระบุไว้ในกรอบ "ควรพบแพทย์" ให้ไปตรวจแทนการลองเอง ผู้ที่ตั้งครรภ์ ให้นมบุตร หรือมีโรคประจำตัว ควรถามแพทย์หรือเภสัชกรก่อนเปลี่ยนอาหาร ออกกำลังกาย หรือใช้ผลิตภัณฑ์ใหม่ ส่วนเรื่องการเงินเป็นความรู้ทั่วไป ไม่ใช่คำแนะนำการลงทุน</div>
+
+  <!-- ===================== วงล้อชีวิต ===================== -->
+  <section class="ch" id="wheel" data-g="wheel">
+    <div class="ch-head">
+      <div class="eyebrow">เริ่มที่นี่</div>
+      <h2>วงล้อชีวิต: ให้คะแนนตัวเอง 10 ด้าน</h2>
+      <p>เลื่อนแต่ละแถบตามความรู้สึกจริงตอนนี้ 1 คือแย่มาก 10 คือดีมาก ค่าเริ่มต้นที่ 5 เป็นแค่ตัวอย่าง ปรับให้เป็นของคุณ ระบบจำค่าไว้ในอุปกรณ์เครื่องนี้</p>
+    </div>
+    <div class="wheel">
+      <div class="radar"><div id="radarBox" role="img" aria-label="กราฟใยแมงมุมแสดงคะแนน 10 ด้านของชีวิต"></div></div>
+      <div>
+        <div class="sliders" id="sliders">
+          <div class="sl"><label for="w_skin">ผิวและรูปลักษณ์</label><input type="range" id="w_skin" min="1" max="10" value="5"><output for="w_skin">5</output></div>
+          <div class="sl"><label for="w_hormone">ฮอร์โมนและสุขภาพ</label><input type="range" id="w_hormone" min="1" max="10" value="5"><output for="w_hormone">5</output></div>
+          <div class="sl"><label for="w_sleep">การนอน</label><input type="range" id="w_sleep" min="1" max="10" value="5"><output for="w_sleep">5</output></div>
+          <div class="sl"><label for="w_food">อาหารและน้ำ</label><input type="range" id="w_food" min="1" max="10" value="5"><output for="w_food">5</output></div>
+          <div class="sl"><label for="w_move">ออกกำลังกาย</label><input type="range" id="w_move" min="1" max="10" value="5"><output for="w_move">5</output></div>
+          <div class="sl"><label for="w_mind">จิตใจ</label><input type="range" id="w_mind" min="1" max="10" value="5"><output for="w_mind">5</output></div>
+          <div class="sl"><label for="w_habit">นิสัยและเวลา</label><input type="range" id="w_habit" min="1" max="10" value="5"><output for="w_habit">5</output></div>
+          <div class="sl"><label for="w_learn">การเรียนรู้</label><input type="range" id="w_learn" min="1" max="10" value="5"><output for="w_learn">5</output></div>
+          <div class="sl"><label for="w_money">การเงิน</label><input type="range" id="w_money" min="1" max="10" value="5"><output for="w_money">5</output></div>
+          <div class="sl"><label for="w_people">ความสัมพันธ์</label><input type="range" id="w_people" min="1" max="10" value="5"><output for="w_people">5</output></div>
+        </div>
+        <div class="focus" id="focusBox" aria-live="polite"></div>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:14px">หลักง่าย ๆ คือยกด้านที่ต่ำสุดขึ้นก่อน เพราะด้านเหล่านี้ดึงด้านอื่นลงด้วย เช่น นอนไม่พอจะทำให้ผิว อารมณ์ น้ำหนัก และสมาธิแย่ไปพร้อมกัน ถ้าคะแนนทุกด้านใกล้กัน ให้เริ่มที่การนอน</p>
+  </section>
+
+  <!-- ===================== ขอบตาดำ ===================== -->
+  <section class="ch" id="eye" data-g="skin">
+    <div class="ch-head">
+      <div class="eyebrow">ดวงตา</div>
+      <h2>ขอบตาดำเกิดจากอะไร แก้อย่างไร</h2>
+      <p>ขอบตาดำมีหลายชนิด แต่ละชนิดแก้ไม่เหมือนกัน การแยกชนิดก่อนช่วยให้ไม่เสียเงินซื้อครีมที่ไม่ตรงกับสาเหตุ</p>
+    </div>
+
+    <figure class="fig" style="max-width:360px;margin-bottom:24px">
+      <svg viewBox="0 0 360 200" role="img" aria-label="ภาพวาดดวงตาพร้อมเงาสีม่วงใต้ตา">
+        <defs>
+          <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style="stop-color:var(--accent);stop-opacity:.55"/>
+            <stop offset="1" style="stop-color:var(--accent);stop-opacity:.05"/>
+          </linearGradient>
+          <clipPath id="eyeclip"><path d="M40 100 Q180 10 320 100 Q180 190 40 100Z"/></clipPath>
+        </defs>
+        <path d="M70 128 Q180 232 290 128 Q180 178 70 128Z" fill="url(#shade)"/>
+        <path d="M40 100 Q180 10 320 100 Q180 190 40 100Z" style="fill:var(--surface);stroke:var(--ink);stroke-width:3" stroke-linejoin="round"/>
+        <g clip-path="url(#eyeclip)">
+          <circle cx="180" cy="100" r="36" style="fill:var(--accent)"/>
+          <circle cx="180" cy="100" r="15" style="fill:var(--ink)"/>
+          <circle cx="192" cy="88" r="6" style="fill:var(--surface)"/>
+        </g>
+        <path d="M40 100 Q180 10 320 100" fill="none" style="stroke:var(--ink);stroke-width:3" stroke-linecap="round"/>
+      </svg>
+      <figcaption>ผิวรอบดวงตาบางราว 0.5 มม. จึงเห็นหลอดเลือดและเงาได้ง่ายกว่าผิวส่วนอื่นของใบหน้า</figcaption>
+    </figure>
+
+    <h3>4 ชนิดที่พบบ่อย</h3>
+    <div class="grid">
+      <div class="panel">
+        <h4><span class="swatch" style="background:#8A5A3C"></span>ชนิดเม็ดสี</h4>
+        <p>ผิวใต้ตามีเมลานินมาก มองเป็นสีน้ำตาลหรือเทาเข้ม</p>
+        <p class="meta"><b>มักมาจาก</b> พันธุกรรม แสงแดด การขยี้ตา ผิวอักเสบจากภูมิแพ้ ฝ้า</p>
+      </div>
+      <div class="panel">
+        <h4><span class="swatch" style="background:#6C5BB8"></span>ชนิดหลอดเลือด</h4>
+        <p>ผิวบางจนเห็นเลือดดำใต้ผิว มองเป็นสีม่วง ฟ้า หรือแดงคล้ำ</p>
+        <p class="meta"><b>มักมาจาก</b> อดนอน คัดจมูกจากภูมิแพ้ ผิวบางตามธรรมชาติ ภาวะซีด</p>
+      </div>
+      <div class="panel">
+        <h4><span class="swatch" style="background:#7D8795"></span>ชนิดเงาจากโครงสร้าง</h4>
+        <p>ร่องใต้ตาลึกหรือมีถุงใต้ตา แสงจึงทอดเงาลงมา ดูคล้ำทั้งที่ผิวไม่ได้เปลี่ยนสี</p>
+        <p class="meta"><b>มักมาจาก</b> อายุที่มากขึ้น ไขมันและคอลลาเจนลดลง ตาบวมจากเกลือและแอลกอฮอล์</p>
+      </div>
+      <div class="panel">
+        <h4><span class="swatch" style="background:var(--ink2)"></span>ชนิดผสม</h4>
+        <p>พบร่วมกันมากกว่าหนึ่งชนิด เป็นกรณีที่พบได้บ่อยที่สุด</p>
+        <p class="meta"><b>แนวทาง</b> จัดการสาเหตุที่คุมได้ก่อน แล้วค่อยเพิ่มผลิตภัณฑ์ทีละอย่าง</p>
+      </div>
+    </div>
+
+    <h3 id="eye-test">ทดสอบเบื้องต้น: ขอบตาดำของคุณเป็นแบบไหน</h3>
+    <p class="sub">ทำหน้ากระจกในที่สว่าง ใช้เวลาไม่ถึงสองนาที ผลลัพธ์เป็นแนวทางเบื้องต้นเท่านั้น</p>
+    <form class="quiz" id="quiz" onsubmit="return false">
+      <fieldset class="q">
+        <legend>1. ใช้นิ้วดึงผิวใต้ตาให้ตึงเบา ๆ แล้วดูสี</legend>
+        <label><input type="radio" name="q1" value="p"><span>สีน้ำตาลหรือเทาไม่เปลี่ยน</span></label>
+        <label><input type="radio" name="q1" value="v"><span>สีม่วงหรือฟ้าเปลี่ยนไป อาจจางลงหรือเข้มขึ้นเมื่อดึง</span></label>
+        <label><input type="radio" name="q1" value="s"><span>เงาจางลงมากเมื่อดึงผิวให้เรียบ</span></label>
+      </fieldset>
+      <fieldset class="q">
+        <legend>2. ส่องไฟจากด้านหน้าหรือถ่ายรูปในที่สว่างตรงหน้า (ไม่มีเงาจากด้านบน)</legend>
+        <label><input type="radio" name="q2" value="p"><span>ยังคล้ำเท่าเดิม</span></label>
+        <label><input type="radio" name="q2" value="v"><span>ยังเป็นสีม่วงหรือฟ้าอยู่</span></label>
+        <label><input type="radio" name="q2" value="s"><span>จางลงมาก แต่ก้มหน้าหรือแสงมาจากด้านบนแล้วเข้มขึ้น</span></label>
+      </fieldset>
+      <fieldset class="q">
+        <legend>3. ถ้านอนครบหรือพักผ่อนดี อาการเป็นอย่างไร</legend>
+        <label><input type="radio" name="q3" value="p"><span>แทบไม่เปลี่ยน เป็นมาตั้งแต่เด็กหรือคนในครอบครัวก็เป็น</span></label>
+        <label><input type="radio" name="q3" value="v"><span>ดีขึ้นชัดเจน และแย่ลงเมื่ออดนอนหรือคัดจมูก</span></label>
+        <label><input type="radio" name="q3" value="s"><span>เด่นขึ้นช่วงบ่ายหรือเย็น หรือมีถุงใต้ตาตั้งแต่ตื่น</span></label>
+      </fieldset>
+      <button type="button" class="btn" id="quizGo">ดูผล</button>
+      <button type="button" class="btn ghost" id="quizReset">ล้างคำตอบ</button>
+      <div class="result" id="quizOut" hidden aria-live="polite"></div>
+    </form>
+
+    <h3>วิธีแก้แบบธรรมชาติและการปรับพฤติกรรม</h3>
+    <p class="sub">ป้ายด้านขวาบอกระดับหลักฐานโดยรวม วิธีที่หลักฐานจำกัดไม่ได้แปลว่าอันตราย แต่ผลอาจเห็นไม่ชัดหรือเป็นแค่ชั่วคราว</p>
+    <div class="list">
+      <div class="row"><h4>ทากันแดดและใส่แว่นกันแดด</h4><span class="tag good">หลักฐานดี</span><p>แสงแดดทำให้เม็ดสีเข้มขึ้น ใช้ SPF 30 ขึ้นไปทุกเช้า เลือกสูตรที่ใช้รอบดวงตาได้ และสวมแว่นกันแดดตอนอยู่กลางแจ้ง</p></div>
+      <div class="row"><h4>เลิกขยี้ตาและรักษาภูมิแพ้</h4><span class="tag good">หลักฐานดี</span><p>การขยี้และการอักเสบซ้ำ ๆ ทำให้เม็ดสีเพิ่ม ถ้าคัดจมูกหรือคันตาบ่อย ให้ปรึกษาแพทย์เรื่องยาแก้แพ้หรือสเปรย์พ่นจมูก</p></div>
+      <div class="row"><h4>นอน 7–9 ชั่วโมง เวลาเดิมทุกวัน</h4><span class="tag mid">หลักฐานพอใช้</span><p>การอดนอนทำให้ผิวซีดลงและเห็นเงาใต้ตาชัดขึ้น การนอนพอช่วยชนิดหลอดเลือดได้มากที่สุด</p></div>
+      <div class="row"><h4>ประคบเย็น 5–10 นาที</h4><span class="tag mid">หลักฐานพอใช้</span><p>ใช้ผ้าสะอาดห่อน้ำแข็งหรือช้อนที่แช่เย็น ความเย็นทำให้หลอดเลือดหดและลดอาการบวมชั่วคราว ไม่ควรวางน้ำแข็งบนผิวโดยตรง</p></div>
+      <div class="row"><h4>ลดเกลือและแอลกอฮอล์ก่อนนอน</h4><span class="tag mid">หลักฐานพอใช้</span><p>ช่วยลดตาบวมตอนเช้า ซึ่งทำให้เกิดเงาใต้ตาชัดขึ้น</p></div>
+      <div class="row"><h4>ตรวจเลือดก่อนกินธาตุเหล็ก</h4><span class="tag mid">ใช้เมื่อขาดจริง</span><p>ภาวะโลหิตจางทำให้ผิวซีดและขอบตาคล้ำชัด ถ้าเหนื่อยง่ายร่วมด้วย ให้ตรวจเลือด อย่าซื้อธาตุเหล็กกินเองโดยไม่ตรวจ เพราะเกินแล้วเป็นโทษ</p></div>
+      <div class="row"><h4>หนุนหมอนสูงขึ้นเล็กน้อย</h4><span class="tag low">หลักฐานจำกัด</span><p>ช่วยให้ของเหลวไม่คั่งรอบตาตอนนอน บางคนตื่นมาบวมน้อยลง</p></div>
+      <div class="row"><h4>ถุงชาเขียวแช่เย็นวางบนเปลือกตา</h4><span class="tag low">หลักฐานจำกัด</span><p>ได้ผลหลักจากความเย็น ส่วนสารในชาอาจช่วยเล็กน้อย ใช้ถุงชาที่ไม่มีกลิ่นปรุงแต่ง</p></div>
+      <div class="row"><h4>แตงกวาแผ่นบาง</h4><span class="tag low">หลักฐานจำกัด</span><p>ให้ความชุ่มชื้นและเย็นสบาย ผลต่อสีของขอบตาไม่ชัดเจน</p></div>
+    </div>
+    <div class="dont" style="margin-top:16px">
+      <b>ไม่แนะนำ</b>
+      <ul>
+        <li>ทาน้ำมะนาว มะเขือเทศ หรือสารเปรี้ยวจัดรอบดวงตา ระคายเคืองและทำให้ผิวคล้ำลงเมื่อโดนแดด</li>
+        <li>ใช้ครีมไม่มีเลขจดแจ้ง อย. ที่สัญญาว่าขาวใน 7 วัน บางตัวมีสารห้ามใช้ เช่น ปรอทหรือสเตียรอยด์</li>
+        <li>ถูหรือนวดแรงรอบดวงตา</li>
+      </ul>
+    </div>
+
+    <h3>ขอบตาดำเกี่ยวกับฮอร์โมนอย่างไร</h3>
+    <div class="grid">
+      <div class="panel"><h4>คอร์ติซอลและการอดนอน</h4><p>ความเครียดเรื้อรังและนอนน้อยทำให้คอร์ติซอลสูงตอนกลางคืน ผิวฟื้นตัวช้าและซีดลง เงาใต้ตาจึงชัดขึ้น</p></div>
+      <div class="panel"><h4>ไทรอยด์</h4><p>ไทรอยด์ต่ำทำให้ผิวแห้ง หน้าและเปลือกตาบวม ร่วมกับเหนื่อยง่ายและหนาวง่าย ควรตรวจเลือดถ้ามีอาการเหล่านี้ครบ</p></div>
+      <div class="panel"><h4>เอสโตรเจนและโปรเจสเตอโรน</h4><p>ช่วงก่อนมีประจำเดือน ตั้งครรภ์ หรือใช้ยาคุมกำเนิด ผิวบางคนมีเม็ดสีเพิ่มและคล้ำรอบตาได้</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== คอดำ ===================== -->
+  <section class="ch" id="neck" data-g="skin">
+    <div class="ch-head">
+      <div class="eyebrow">ลำคอ</div>
+      <h2>คอดำเกิดจากอะไร แก้อย่างไร</h2>
+      <p>คอดำมีทั้งแบบที่ล้างไม่ออกเพราะผิวเปลี่ยนไป และแบบที่เกิดจากการเสียดสีหรือสิ่งที่สัมผัส ต้องแยกให้ได้ก่อนเพราะวิธีแก้ต่างกัน</p>
+    </div>
+
+    <h3>สาเหตุที่พบบ่อย</h3>
+    <div class="list">
+      <div class="row"><h4>ภาวะดื้ออินซูลิน (acanthosis nigricans)</h4><span class="tag no">ควรตรวจ</span><p>ผิวหนาคล้ายกำมะหยี่ สีน้ำตาลเข้ม มักพบที่คอด้านหลังและด้านข้าง รักแร้ ข้อพับ เกี่ยวข้องกับน้ำหนักเกิน เบาหวานระยะก่อนเป็นเบาหวาน และถุงน้ำรังไข่หลายใบ (PCOS)</p></div>
+      <div class="row"><h4>การเสียดสีและขัดถู</h4><span class="tag mid">แก้ได้</span><p>ปกเสื้อ สร้อย ผ้าพันคอ หรือการขัดแรง ๆ ทำให้ผิวอักเสบแล้วคล้ำขึ้น</p></div>
+      <div class="row"><h4>แสงแดด</h4><span class="tag mid">แก้ได้</span><p>คอและหน้าอกส่วนบนโดนแดดบ่อยแต่มักลืมทากันแดด</p></div>
+      <div class="row"><h4>ผลิตภัณฑ์ที่แพ้หรือระคายเคือง</h4><span class="tag mid">แก้ได้</span><p>น้ำหอม สเปรย์ ครีมบางสูตร ทำให้ผิวอักเสบแล้วเกิดรอยคล้ำตามหลัง</p></div>
+      <div class="row"><h4>ยาและฮอร์โมนบางชนิด</h4><span class="tag low">ถามแพทย์</span><p>ยาบางกลุ่ม เช่น ฮอร์โมนเอสโตรเจนและไนอะซินขนาดสูง อาจทำให้ผิวคล้ำ ห้ามหยุดยาเอง ให้ปรึกษาแพทย์ที่สั่งยา</p></div>
+      <div class="row"><h4>โรคต่อมไร้ท่อ</h4><span class="tag no">ควรตรวจ</span><p>ไทรอยด์ผิดปกติและโรคของต่อมหมวกไตพบได้น้อยกว่า แต่ทำให้ผิวคล้ำทั่วตัวได้ มักมีอาการอื่นร่วม</p></div>
+    </div>
+
+    <h3>แยกแบบไหนด้วยตัวเอง</h3>
+    <div class="two">
+      <div class="panel"><h4>ลักษณะที่ชวนสงสัยภาวะดื้ออินซูลิน</h4><p>ผิวสัมผัสหนาและนุ่มเหมือนกำมะหยี่ สีเข้มไม่ชัดขอบ ขัดแล้วไม่ออก พบหลายตำแหน่ง เช่น รักแร้และข้อพับ อาจมีติ่งเนื้อเล็ก ๆ ร่วมด้วย</p></div>
+      <div class="panel"><h4>ลักษณะที่ชวนสงสัยการเสียดสีหรือแพ้</h4><p>สีคล้ำตามแนวที่สัมผัส เช่น แนวปกเสื้อหรือสร้อย ผิวไม่หนา อาจมีแดงหรือคันนำมาก่อน และจางลงเมื่อหยุดสิ่งกระตุ้น</p></div>
+    </div>
+
+    <h3>ขั้นตอนแก้คอดำ</h3>
+    <ol class="steps">
+      <li><div><b>ตรวจหาสาเหตุภายใน</b><br><span>ถ้าผิวหนาแบบกำมะหยี่ ให้ตรวจน้ำตาลในเลือดและความเสี่ยงเบาหวาน ถ้าประจำเดือนมาไม่ปกติหรือน้ำหนักขึ้นเร็ว ให้ถามเรื่อง PCOS และไทรอยด์</span></div></li>
+      <li><div><b>ลดน้ำหนักถ้ามีน้ำหนักเกิน</b><br><span>การลดน้ำหนักทำให้ความไวต่ออินซูลินดีขึ้น และคอดำจางลงได้ในหลายคน</span></div></li>
+      <li><div><b>ลดน้ำตาลและแป้งขัดขาว</b><br><span>ลดเครื่องดื่มหวานและขนมหวาน กินโปรตีนและผักให้พอ เดินเบา ๆ 10–15 นาทีหลังอาหาร</span></div></li>
+      <li><div><b>ผลัดเซลล์ผิวอย่างอ่อนโยน</b><br><span>ใช้ผลิตภัณฑ์ที่มียูเรีย แลคติกแอซิด หรือกรดซาลิไซลิก สัปดาห์ละ 2–3 ครั้งก่อน ไม่ขัดด้วยแปรงหรือสครับแรง ๆ</span></div></li>
+      <li><div><b>ทายาหรือครีมที่แพทย์แนะนำ</b><br><span>แพทย์ผิวหนังอาจสั่งเรตินอยด์หรือยาทาเฉพาะที่ ใช้ตามคำแนะนำ ห้ามใช้ในผู้ตั้งครรภ์ถ้าไม่ได้รับอนุญาต</span></div></li>
+      <li><div><b>ทากันแดดและสลับสิ่งที่ระคายเคือง</b><br><span>ทากันแดดที่คอทุกเช้า เปลี่ยนวัสดุสร้อยหรือปกเสื้อที่เสียดสี ล้างเบา ๆ ด้วยสบู่อ่อน</span></div></li>
+    </ol>
+    <div class="dont" style="margin-top:16px">
+      <b>ไม่ควรทำ</b>
+      <ul>
+        <li>ขัดด้วยเกลือ น้ำตาลเม็ดหยาบ หรือแปรงแข็ง ผิวอักเสบแล้วคล้ำกว่าเดิม</li>
+        <li>ทาน้ำมะนาวหรือน้ำส้มสายชู ระคายเคืองและไวต่อแดด</li>
+        <li>ซื้อครีมไวท์เทนนิ่งที่ไม่มี อย. ใช้เองเป็นเวลานาน</li>
+      </ul>
+    </div>
+    <p class="sub" style="margin-top:12px">วิธีธรรมชาติอย่างว่านหางจระเข้ช่วยให้ผิวชุ่มชื้นได้ แต่ยังไม่มีหลักฐานชัดเจนว่าทำให้คอดำจางลง การรักษาที่ได้ผลคือการคุมสาเหตุภายในควบคู่กับการดูแลผิว</p>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>ควรพบแพทย์เมื่อ</h4>
+      <ul>
+        <li>คอหรือรักแร้ดำเร็วขึ้นภายในไม่กี่เดือน หรือผิวหนาตัวมาก</li>
+        <li>กระหายน้ำ ปัสสาวะบ่อย เหนื่อยง่าย หรือน้ำหนักลดโดยไม่ทราบสาเหตุ</li>
+        <li>ประจำเดือนมาไม่ปกติ ขนดก สิวมาก</li>
+        <li>ผิวคล้ำทั่วตัวร่วมกับอ่อนเพลียหรือความดันต่ำ</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== ครีม ===================== -->
+  <section class="ch" id="cream" data-g="skin">
+    <div class="ch-head">
+      <div class="eyebrow">ผลิตภัณฑ์</div>
+      <h2>ครีมที่แนะนำและวิธีใช้ให้ถูก</h2>
+      <p>เลือกตามสาเหตุที่ตรวจพบ ใช้ทีละอย่าง และให้เวลา 8–12 สัปดาห์ก่อนประเมินผล</p>
+    </div>
+
+    <h3>ส่วนผสมที่ควรรู้จัก</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>ส่วนผสม</th><th>ช่วยเรื่อง</th><th>ใช้เมื่อไร</th><th>ข้อควรระวัง</th></tr></thead>
+        <tbody>
+          <tr><td>กันแดด SPF 30+ PA+++</td><td>ป้องกันเม็ดสีเข้มขึ้นทั้งที่ตาและคอ</td><td>เช้าทุกวัน ทาซ้ำทุก 2 ชม. เมื่ออยู่กลางแจ้ง</td><td>ใช้สูตรที่เหมาะกับรอบดวงตา เลี่ยงให้เข้าตา</td></tr>
+          <tr><td>วิตามินซี</td><td>ลดเม็ดสี ต้านอนุมูลอิสระ</td><td>เช้า ก่อนกันแดด</td><td>ผิวแพ้ง่ายให้เริ่มความเข้มข้นต่ำ อาจแสบ</td></tr>
+          <tr><td>ไนอาซินาไมด์</td><td>ช่วยลดเม็ดสี เสริมเกราะผิว ผิวใต้ตาแข็งแรงขึ้น</td><td>เช้าหรือเย็น</td><td>บางคนแดงถ้าความเข้มข้นสูง ให้ลดความถี่</td></tr>
+          <tr><td>คาเฟอีน</td><td>ลดบวมและความคล้ำชนิดหลอดเลือดชั่วคราว</td><td>เช้าหรือเย็น รอบดวงตา</td><td>ผลเห็นไม่ชัดและไม่ถาวร</td></tr>
+          <tr><td>เรตินอล / เรตินอยด์</td><td>กระตุ้นการผลัดเซลล์ ผิวหนาขึ้นระยะยาว ลดเม็ดสี</td><td>กลางคืนเท่านั้น เริ่ม 2 คืนต่อสัปดาห์</td><td>ห้ามใช้ถ้าตั้งครรภ์ วางแผนตั้งครรภ์ หรือให้นมบุตร แห้งและลอกได้ รอบตาเลือกสูตรสำหรับตา</td></tr>
+          <tr><td>AHA (แลคติก ไกลโคลิก)</td><td>ผลัดเซลล์ผิวที่คอ ลดความหมองคล้ำ</td><td>กลางคืน 2–3 คืนต่อสัปดาห์</td><td>ไวต่อแดดมาก ห้ามใช้ชิดดวงตา</td></tr>
+          <tr><td>ยูเรีย 10–20%</td><td>ลดความหนากระด้างของผิวคอ</td><td>เย็นหลังอาบน้ำ</td><td>แสบถ้าผิวมีแผลหรือแตก</td></tr>
+          <tr><td>กรดอะเซลาอิก</td><td>ลดเม็ดสีและสิว</td><td>เช้าหรือเย็น</td><td>ระคายเล็กน้อยช่วงสัปดาห์แรก</td></tr>
+          <tr><td>กรดทรานซามิก</td><td>ลดฝ้าและเม็ดสีบางชนิด</td><td>ตามฉลากสูตรนั้น</td><td>เป็นส่วนผสมในเซรั่มหลายสูตร ถามเภสัชกรหรือแพทย์ ถ้ามีประวัติลิ่มเลือด</td></tr>
+          <tr><td>ไฮโดรควิโนน</td><td>ลดเม็ดสีเข้ม</td><td>เฉพาะที่แพทย์สั่ง</td><td>เป็นยา ใช้ผิดวิธีหรือนานเกินไปทำให้ผิวด่าง ห้ามซื้อใช้เอง</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:12px">ชนิดเม็ดสีตอบสนองต่อกันแดด วิตามินซี ไนอาซินาไมด์ และเรตินอยด์ ชนิดหลอดเลือดตอบสนองต่อการนอนและคาเฟอีน ชนิดเงาจากโครงสร้างมักต้องปรึกษาแพทย์เรื่องหัตถการ ครีมทาอย่างเดียวช่วยได้จำกัด</p>
+
+    <h3>ขั้นตอนทาครีมรอบดวงตาและคอ</h3>
+    <div class="two">
+      <div>
+        <ol class="steps">
+          <li><div><b>ล้างหน้า ซับให้แห้ง</b><br><span>ใช้ผ้านุ่มซับเบา ๆ ไม่ถู</span></div></li>
+          <li><div><b>ทาเซรั่มก่อน</b><br><span>เรียงจากเนื้อบางไปหาเนื้อข้น</span></div></li>
+          <li><div><b>ครีมรอบดวงตา เท่าเมล็ดข้าวต่อข้าง</b><br><span>แตะ 3 จุดตามกระดูกเบ้าตาด้านล่าง ใช้นิ้วนางตบเบา ๆ ห่างขอบตาประมาณครึ่งเซนติเมตร อย่าให้เข้าตา</span></div></li>
+          <li><div><b>ครีมคอ</b><br><span>ปริมาณเท่าเหรียญสิบ ลูบจากหน้าอกส่วนบนขึ้นถึงใต้คาง ไม่ถูแรง</span></div></li>
+          <li><div><b>กันแดดเป็นขั้นสุดท้ายตอนเช้า</b><br><span>ทาให้ครอบคลุมรอบตา คอ และหน้าอกส่วนบน</span></div></li>
+        </ol>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr">
+        <div class="panel"><h4>ทดสอบแพ้ก่อนใช้จริง</h4><p>ทาปริมาณเล็กน้อยที่ท้องแขนด้านใน รอ 24–48 ชั่วโมง ถ้าแดง คัน หรือบวมให้หยุดใช้</p></div>
+        <div class="panel"><h4>เริ่มทีละอย่าง</h4><p>เพิ่มผลิตภัณฑ์ใหม่ครั้งละหนึ่งตัว ห่างกัน 2 สัปดาห์ ถ้าแพ้จะรู้ว่าตัวไหน ไม่ใช้เรตินอลกับ AHA ในคืนเดียวกันตอนเริ่มต้น</p></div>
+        <div class="panel"><h4>ถ่ายรูปเทียบ</h4><p>ถ่ายที่เดิม แสงเดิม ทุก 2 สัปดาห์ จะเห็นความเปลี่ยนแปลงจริงมากกว่าดูกระจกทุกวัน</p></div>
+      </div>
+    </div>
+
+    <h3 id="routine">ตารางดูแลประจำวัน</h3>
+    <p class="sub">ติ๊กเมื่อทำแล้ว ระบบจะรีเซ็ตเองทุกวัน ใช้ได้ในอุปกรณ์เครื่องนี้ ปรับรายการให้ตรงกับผลิตภัณฑ์ที่ใช้อยู่</p>
+    <div class="panel" style="padding:18px 20px">
+      <div class="progress"><span id="ckText">0 / 0</span><div class="bar"><i id="ckBar"></i></div></div>
+      <div class="ck" id="ckBox">
+        <div>
+          <h4>เช้า</h4>
+          <label><input type="checkbox" data-ck="m1"><span>ล้างหน้าและซับให้แห้ง</span></label>
+          <label><input type="checkbox" data-ck="m2"><span>เซรั่มวิตามินซีหรือไนอาซินาไมด์</span></label>
+          <label><input type="checkbox" data-ck="m3"><span>ครีมรอบดวงตา</span></label>
+          <label><input type="checkbox" data-ck="m4"><span>กันแดดที่หน้า รอบตา และคอ</span></label>
+        </div>
+        <div>
+          <h4>เย็น</h4>
+          <label><input type="checkbox" data-ck="n1"><span>ล้างกันแดดและเครื่องสำอางให้หมด</span></label>
+          <label><input type="checkbox" data-ck="n2"><span>ประคบเย็น 5–10 นาที</span></label>
+          <label><input type="checkbox" data-ck="n3"><span>เรตินอลหรือ AHA (เฉพาะคืนที่กำหนด)</span></label>
+          <label><input type="checkbox" data-ck="n4"><span>ครีมรอบตาและมอยส์เจอไรเซอร์</span></label>
+          <label><input type="checkbox" data-ck="n5"><span>ครีมยูเรียที่คอ</span></label>
+        </div>
+        <div>
+          <h4>ทั้งวัน</h4>
+          <label><input type="checkbox" data-ck="d1"><span>นอนก่อน 23:00 และครบ 7 ชั่วโมง</span></label>
+          <label><input type="checkbox" data-ck="d2"><span>ดื่มน้ำเพียงพอ</span></label>
+          <label><input type="checkbox" data-ck="d3"><span>เดินเบา ๆ 10–15 นาทีหลังมื้อใดมื้อหนึ่ง</span></label>
+          <label><input type="checkbox" data-ck="d4"><span>ไม่ขยี้ตา ไม่ขัดคอแรง</span></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== สิว ===================== -->
+  <section class="ch" id="acne" data-g="acne">
+    <div class="ch-head">
+      <div class="eyebrow">สิว</div>
+      <h2>สิวทุกแบบบนใบหน้า แยกให้ถูก รักษาให้ตรง</h2>
+      <p>สิวหลายแบบหน้าตาคล้ายกันแต่รักษาไม่เหมือนกัน ถ้าใช้ยาผิดชนิด สิวอาจไม่ดีขึ้นหรือแย่ลง เริ่มจากรู้ก่อนว่าที่เป็นอยู่คือสิวแบบไหน</p>
+    </div>
+
+    <h3>สิวเกิดจากอะไร</h3>
+    <div class="grid">
+      <div class="panel"><h4>รูขุมขนอุดตัน</h4><p>เซลล์ผิวที่ผลัดไม่หมดรวมกับไขมัน อุดปากรูขุมขน เป็นจุดเริ่มของสิวเกือบทุกชนิด</p></div>
+      <div class="panel"><h4>ไขมันมาก</h4><p>ฮอร์โมนแอนโดรเจนกระตุ้นต่อมไขมัน จึงพบสิวมากในวัยรุ่น ช่วงก่อนมีประจำเดือน และใน PCOS</p></div>
+      <div class="panel"><h4>แบคทีเรียบนผิว</h4><p>เชื้อ C. acnes มีอยู่บนผิวทุกคน แต่เพิ่มจำนวนในรูที่อุดตัน แล้วกระตุ้นให้เกิดการอักเสบ</p></div>
+      <div class="panel"><h4>การอักเสบ</h4><p>ทำให้เป็นตุ่มแดง หนอง หรือก้อนลึก การบีบหรือแคะทำให้อักเสบรุนแรงและเกิดแผลเป็น</p></div>
+    </div>
+    <p class="sub" style="margin-top:12px">สิวไม่ได้เกิดเพราะหน้าสกปรก สิวหัวดำมีสีดำเพราะไขมันและเม็ดสีสัมผัสอากาศ ไม่ใช่ฝุ่นหรือขี้ไคล การขัดหน้าแรง ๆ ทำให้ผิวระคายและสิวอักเสบมากขึ้น</p>
+
+    <h3>เครื่องมือ: ประเมินสิวเบื้องต้น</h3>
+    <p class="sub">เลือกลักษณะที่ตรงกับสิวส่วนใหญ่ของคุณและจำนวนโดยประมาณ ผลเป็นแนวทางเริ่มต้น ไม่ใช่การวินิจฉัย</p>
+    <div class="calc">
+      <div class="fields">
+        <div class="fld"><label for="acType">ลักษณะสิวส่วนใหญ่</label>
+          <select id="acType">
+            <option value="comedo">หัวขาวหรือหัวดำ ไม่แดงมาก</option>
+            <option value="inflam" selected>ตุ่มแดง นูน บางเม็ดมีหัวหนอง</option>
+            <option value="deep">ก้อนแข็งลึก เจ็บ ไม่มีหัว หรือเริ่มเป็นแผลเป็น</option>
+            <option value="yeast">ตุ่มเล็กขนาดเท่า ๆ กัน คัน ที่หน้าผากหรือไรผม</option>
+            <option value="perioral">ตุ่มแดงเล็กรอบปาก จมูก หรือตา แสบหรือลอก</option>
+          </select>
+        </div>
+        <div class="fld"><label for="acCount">จำนวนบนใบหน้า</label>
+          <select id="acCount">
+            <option value="few" selected>น้อยกว่า 10 เม็ด</option>
+            <option value="mid">10–30 เม็ด</option>
+            <option value="many">มากกว่า 30 เม็ด หรือทั่วใบหน้า</option>
+          </select>
+        </div>
+      </div>
+      <div class="result" id="acOut" aria-live="polite" style="margin-top:0"></div>
+      <div class="ex">ตัวเลือกเริ่มต้นเป็นตัวอย่าง เลือกใหม่ให้ตรงกับของคุณ</div>
+    </div>
+
+    <h3>ชนิดของสิวและวิธีรับมือ</h3>
+    <div class="scroll">
+      <table style="min-width:860px">
+        <thead><tr><th>ชนิด</th><th>หน้าตา</th><th>ตำแหน่งที่พบบ่อย</th><th>ช่วยได้ด้วย</th><th>ควรพบแพทย์เมื่อ</th></tr></thead>
+        <tbody>
+          <tr><td>สิวหัวขาว</td><td>ตุ่มเล็กสีเนื้อหรือขาว ไม่แดง</td><td>หน้าผาก คาง จมูก</td><td>อะดาพาลีน กรดซาลิไซลิก ล้างหน้าอ่อนโยน</td><td>ไม่ดีขึ้นใน 3 เดือน</td></tr>
+          <tr><td>สิวหัวดำ</td><td>จุดดำที่ปากรูขุมขน</td><td>จมูก คาง</td><td>กรดซาลิไซลิก อะดาพาลีน ไม่บีบแรง</td><td>เป็นมากและอักเสบร่วม</td></tr>
+          <tr><td>สิวอักเสบ (ตุ่มแดง หัวหนอง)</td><td>ตุ่มแดงนูน บางเม็ดมีหนอง</td><td>แก้ม หน้าผาก คาง</td><td>เบนซอยล์เพอร็อกไซด์ อะดาพาลีน</td><td>มากกว่าราว 30 เม็ด หรือเริ่มเป็นแผลเป็น</td></tr>
+          <tr><td>สิวก้อนลึก (หัวช้าง)</td><td>ก้อนแข็งใหญ่ เจ็บ ไม่มีหัว</td><td>กราม แก้ม คาง</td><td>ไม่ควรรักษาเองเพราะเสี่ยงแผลเป็น</td><td>พบแพทย์ทันทีที่เป็น</td></tr>
+          <tr><td>สิวฮอร์โมน</td><td>ตุ่มลึกเจ็บ มักขึ้นก่อนมีประจำเดือน</td><td>กราม คาง แนวลำคอ</td><td>รักษาตามชนิดสิว และคุยกับแพทย์เรื่องยาฮอร์โมน</td><td>ประจำเดือนผิดปกติ ขนดก ผมบาง</td></tr>
+          <tr><td>สิวผดหรือสิวยีสต์</td><td>ตุ่มเล็กขนาดเท่า ๆ กัน คัน มักไม่มีหัวหนอง</td><td>หน้าผาก ไรผม ขมับ หน้าอก หลัง</td><td>ต้องใช้ยาต้านเชื้อรา ยาสิวทั่วไปมักไม่ช่วย</td><td>สงสัยให้ตรวจเพื่อยืนยัน</td></tr>
+          <tr><td>สิวจากการเสียดสี</td><td>ตุ่มตรงจุดที่มีสิ่งกดทับ</td><td>คางและแก้ม (หน้ากาก) ขมับและหน้าผาก (หมวก สายแว่น)</td><td>ลดการเสียดสี ใช้ผ้าสะอาดนุ่ม ล้างหน้าหลังเหงื่อออก</td><td>ไม่ดีขึ้นแม้ลดการเสียดสี</td></tr>
+          <tr><td>สิวจากเครื่องสำอางและน้ำมันผม</td><td>ตุ่มเล็กเรียงตามแนวที่สัมผัส</td><td>หน้าผาก แนวไรผม แก้ม</td><td>เลือกสูตรไม่อุดตันรูขุมขน ล้างเครื่องสำอางให้หมด กันเส้นผมและน้ำมันไม่ให้โดนหน้า</td><td>ไม่ดีขึ้นหลังหยุดผลิตภัณฑ์ 6–8 สัปดาห์</td></tr>
+          <tr><td>สิวจากยา</td><td>เกิดฉับพลันหลังเริ่มยา ตุ่มขนาดใกล้เคียงกัน</td><td>หน้า อก หลัง</td><td>อย่าหยุดยาเองถ้าเป็นยาที่แพทย์สั่ง</td><td>แจ้งแพทย์ที่สั่งยา ยาที่เกี่ยวข้อง เช่น สเตียรอยด์ วิตามินบี 12 ขนาดสูง ยากันชักบางชนิด ผลิตภัณฑ์เสริมสร้างกล้ามเนื้อบางชนิด</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>ตุ่มที่หน้าตาคล้ายสิวแต่ไม่ใช่สิว</h3>
+    <div class="grid">
+      <div class="panel"><h4>ผิวหนังอักเสบรอบปาก</h4><p>ตุ่มแดงเล็ก ๆ รอบปาก จมูก ตา อาจแสบและลอก มักสัมพันธ์กับการทาครีมสเตียรอยด์ ยาสิวทั่วไปทำให้แย่ลงได้</p><p class="meta"><b>ทำอะไร</b> หยุดครีมสเตียรอยด์ที่ซื้อใช้เอง และพบแพทย์</p></div>
+      <div class="panel"><h4>โรสเซเชีย</h4><p>หน้าแดงง่าย ร้อนวูบวาบ เห็นเส้นเลือดฝอย อาจมีตุ่มแดงโดยไม่มีหัวอุดตัน พบบ่อยวัย 30 ปีขึ้นไป</p><p class="meta"><b>ทำอะไร</b> พบแพทย์ผิวหนัง เลี่ยงสิ่งกระตุ้น เช่น แดด ความร้อน อาหารเผ็ด และทากันแดด</p></div>
+      <div class="panel"><h4>ไมเลีย</h4><p>ตุ่มขาวแข็งเม็ดเล็กรอบตาและโหนกแก้ม เป็นถุงเคราติน ไม่ใช่สิว กดไม่ออกและไม่ควรแคะ</p><p class="meta"><b>ทำอะไร</b> ให้แพทย์นำออก</p></div>
+      <div class="panel"><h4>ขนคุดจากการโกน</h4><p>ตุ่มแดงตามแนวหนวดเคราหลังโกน เกิดจากขนม้วนกลับเข้าผิว</p><p class="meta"><b>ทำอะไร</b> โกนตามทิศของเส้นขน ใช้ใบมีดคมสะอาด ไม่โกนชิดเกินไป</p></div>
+      <div class="panel"><h4>เส้นไขมันที่จมูก</h4><p>จุดเล็กสีเทาเหลืองเรียงในรูขุมขนที่จมูก เป็นเรื่องปกติของต่อมไขมัน ไม่ใช่สิว</p><p class="meta"><b>ทำอะไร</b> ไม่ต้องรักษา การบีบทำให้รูกว้างขึ้นและเกิดรอย</p></div>
+      <div class="panel"><h4>ผื่นแพ้สัมผัส</h4><p>แดง คัน ลอก เป็นตุ่มเล็กหลังใช้ผลิตภัณฑ์ใหม่ ขึ้นเร็วภายในไม่กี่วัน</p><p class="meta"><b>ทำอะไร</b> หยุดผลิตภัณฑ์ใหม่ ล้างหน้าอ่อนโยน ถ้าไม่ดีขึ้นใน 1 สัปดาห์ให้พบแพทย์</p></div>
+    </div>
+
+    <h3>ตำแหน่งบนใบหน้ากับสาเหตุที่พบบ่อย</h3>
+    <div class="scroll">
+      <table style="min-width:720px">
+        <thead><tr><th>ตำแหน่ง</th><th>สาเหตุที่พบบ่อย</th><th>ลองทำ</th></tr></thead>
+        <tbody>
+          <tr><td>หน้าผากและไรผม</td><td>น้ำมันหรือเจลแต่งผมที่โดนหน้า เหงื่อ หมวก สิวยีสต์</td><td>ล้างหน้าหลังใช้ผลิตภัณฑ์ผม เลือกสูตรไม่อุดตัน ซักหมวกและที่คาดผมบ่อย ๆ</td></tr>
+          <tr><td>จมูกและร่องข้างจมูก</td><td>ต่อมไขมันขนาดใหญ่ ทำให้เกิดสิวหัวดำและรูขุมขนกว้าง</td><td>กรดซาลิไซลิก ล้างหน้าอ่อนโยน ไม่ขัดและไม่บีบแรง</td></tr>
+          <tr><td>แก้ม</td><td>หน้าจอโทรศัพท์ ปลอกหมอน มือที่เท้าคาง หน้ากาก เครื่องสำอาง</td><td>เช็ดหน้าจอ เปลี่ยนปลอกหมอนสัปดาห์ละครั้ง ไม่เอามือจับหน้า</td></tr>
+          <tr><td>กราม คาง และแนวลำคอ</td><td>ฮอร์โมน โดยเฉพาะผู้หญิงช่วงก่อนมีประจำเดือน และ PCOS</td><td>ถ้าเป็นเรื้อรังพร้อมประจำเดือนผิดปกติ ให้ปรึกษาแพทย์ ดูบทฮอร์โมน</td></tr>
+          <tr><td>รอบปาก</td><td>ผิวหนังอักเสบรอบปาก ลิปที่แพ้ ครีมสเตียรอยด์</td><td>หยุดครีมสเตียรอยด์ที่ซื้อเอง และพบแพทย์</td></tr>
+          <tr><td>ขมับและหน้าหู</td><td>สายแว่น หมวกกันน็อก แชมพูหรือครีมนวดที่ตกค้าง</td><td>ล้างผมให้หมดฟอง ทำความสะอาดอุปกรณ์ที่แตะหน้า</td></tr>
+          <tr><td>หนวดเคราและแนวโกน</td><td>ขนคุด สิวจากการโกน</td><td>โกนตามทิศเส้นขน ใช้ครีมโกนและใบมีดสะอาด</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:12px">แผนที่ใบหน้าตามแนวแพทย์แผนจีนหรือโหงวเฮ้งที่โยงสิวแต่ละจุดกับอวัยวะภายใน เช่น สิวหน้าผากแปลว่าตับไม่ดี ไม่มีหลักฐานทางวิทยาศาสตร์รองรับ ตำแหน่งบอกได้เพียงสิ่งที่ไปสัมผัสผิวหรือแนวโน้มของฮอร์โมน</p>
+
+    <h3>ส่วนผสมช่วยสิวที่ควรรู้</h3>
+    <div class="scroll">
+      <table style="min-width:820px">
+        <thead><tr><th>ส่วนผสม</th><th>ทำงานอย่างไร</th><th>วิธีเริ่มใช้</th><th>ข้อควรระวัง</th></tr></thead>
+        <tbody>
+          <tr><td>เบนซอยล์เพอร็อกไซด์ 2.5–5%</td><td>ลดแบคทีเรียและการอักเสบ ไม่ทำให้เชื้อดื้อยา</td><td>เริ่มวันเว้นวัน ทาทั่วบริเวณที่เป็นสิว ไม่ใช่เฉพาะเม็ด</td><td>แห้ง ลอก ฟอกสีผ้าและปลอกหมอน</td></tr>
+          <tr><td>อะดาพาลีน 0.1%</td><td>ช่วยผลัดเซลล์ ป้องกันการอุดตัน ลดอักเสบ</td><td>กลางคืน เท่าเม็ดถั่วเขียวทั้งหน้า เริ่ม 2–3 คืนต่อสัปดาห์</td><td>แห้งและระคายใน 2–4 สัปดาห์แรก ห้ามใช้เมื่อตั้งครรภ์หรือวางแผนตั้งครรภ์</td></tr>
+          <tr><td>กรดซาลิไซลิก 0.5–2%</td><td>ละลายไขมันในรูขุมขน เหมาะกับสิวอุดตันและสิวหัวดำ</td><td>วันละครั้ง ค่อยเพิ่มเป็น 2 ครั้ง</td><td>ผิวแห้ง ผู้แพ้แอสไพรินควรถามเภสัชกร</td></tr>
+          <tr><td>กรดอะเซลาอิก 10–20%</td><td>ลดแบคทีเรีย ผลัดเซลล์ และลดรอยดำหลังสิว</td><td>เช้าหรือเย็น</td><td>แสบเล็กน้อยช่วงแรก ถ้าตั้งครรภ์ให้ปรึกษาแพทย์</td></tr>
+          <tr><td>ไนอาซินาไมด์ 2–5%</td><td>ลดอักเสบและความมัน ช่วยให้รอยดำจางลง</td><td>เช้าหรือเย็น</td><td>บางคนแดง ให้ลดความถี่</td></tr>
+          <tr><td>ยาปฏิชีวนะทา (เช่น คลินดาไมซิน)</td><td>ลดแบคทีเรีย</td><td>ใช้ตามแพทย์สั่ง มักใช้คู่เบนซอยล์เพอร็อกไซด์</td><td>เป็นยาต้องมีใบสั่ง ใช้เดี่ยวนาน ๆ แล้วเชื้อดื้อยา</td></tr>
+          <tr><td>ยากิน เช่น ยาปฏิชีวนะ ยาฮอร์โมน ไอโซเตรทติโนอิน</td><td>รักษาสิวปานกลางถึงรุนแรงหรือสิวก้อนลึก</td><td>แพทย์สั่งและติดตามเท่านั้น</td><td>ไอโซเตรทติโนอินห้ามใช้ขณะตั้งครรภ์ ต้องคุมกำเนิดและตรวจเลือดตามนัด ทำให้ปากและผิวแห้งมาก</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:12px">ยาสิวใช้เวลา 8–12 สัปดาห์จึงประเมินผลได้ ช่วง 2–4 สัปดาห์แรกอาจแห้ง ลอก หรือมีสิวใหม่ขึ้นชั่วคราว ให้ใช้มอยส์เจอไรเซอร์ช่วยและไม่เพิ่มยาหลายตัวพร้อมกัน ผู้ตั้งครรภ์หรือให้นมบุตรควรถามแพทย์ก่อนใช้ยาสิวทุกชนิด</p>
+
+    <h3>ขั้นบันไดการรักษา</h3>
+    <ol class="steps">
+      <li><div><b>ขั้นพื้นฐาน</b><br><span>ล้างหน้าอ่อนโยนเช้าเย็น มอยส์เจอไรเซอร์สูตรไม่อุดตัน กันแดดทุกเช้า และเลิกบีบเลิกแคะ</span></div></li>
+      <li><div><b>ยาทาที่ซื้อได้เอง</b><br><span>เริ่มอะดาพาลีนหรือกรดซาลิไซลิกสำหรับสิวอุดตัน และเบนซอยล์เพอร็อกไซด์สำหรับสิวอักเสบ ใช้ต่อเนื่อง 8–12 สัปดาห์ ปรึกษาเภสัชกรเรื่องสูตรและความเข้มข้น</span></div></li>
+      <li><div><b>พบแพทย์ผิวหนัง</b><br><span>เมื่อไม่ดีขึ้น สิวอักเสบมาก เป็นก้อนลึก เริ่มมีแผลเป็น หรือสงสัยว่าเป็นสิวยีสต์ ผิวหนังอักเสบรอบปาก แพทย์อาจสั่งยาทาผสม ยากิน หรือยาฮอร์โมนในผู้หญิง</span></div></li>
+      <li><div><b>หัตถการโดยแพทย์</b><br><span>กดสิวในสถานพยาบาล ฉีดยาที่ก้อนสิวลึก ปอกผิวด้วยกรด หรือเลเซอร์ ไม่ควรกดสิวเองเพราะติดเชื้อและเกิดแผลเป็นได้</span></div></li>
+    </ol>
+
+    <h3>ข้อปฏิบัติรายวันเพื่อไม่ให้สิวแย่ลง</h3>
+    <div class="list">
+      <div class="row"><h4>ล้างหน้าเช้าเย็นด้วยสูตรอ่อนโยน</h4><span class="tag good">หลักฐานดี</span><p>ไม่ขัด ไม่ถูแรง ล้างบ่อยกว่านี้ทำให้ผิวระคายและมันเพิ่ม ถ้าเหงื่อออกมากให้ล้างเพิ่มเป็นครั้งคราว</p></div>
+      <div class="row"><h4>ใช้มอยส์เจอไรเซอร์เจลหรือสูตรไม่มัน</h4><span class="tag good">หลักฐานดี</span><p>ผิวเป็นสิวก็ขาดน้ำได้ โดยเฉพาะเมื่อใช้ยาสิว มอยส์เจอไรเซอร์ช่วยให้ทนยาได้ต่อเนื่อง</p></div>
+      <div class="row"><h4>กันแดดสูตรที่ไม่อุดตันรูขุมขน</h4><span class="tag good">หลักฐานดี</span><p>แดดทำให้รอยสิวเข้มขึ้น และยาสิวหลายตัวทำให้ผิวไวต่อแดด</p></div>
+      <div class="row"><h4>ไม่บีบ ไม่แคะ ไม่เจาะ</h4><span class="tag good">หลักฐานดี</span><p>เสี่ยงติดเชื้อ เกิดรอยดำและแผลเป็นถาวร ถ้าต้องกดสิวให้ทำกับแพทย์หรือสถานพยาบาล</p></div>
+      <div class="row"><h4>เปลี่ยนปลอกหมอนและผ้าเช็ดหน้าสัปดาห์ละครั้ง</h4><span class="tag mid">หลักฐานพอใช้</span><p>เช็ดหน้าจอโทรศัพท์ทุกวัน ล้างแปรงแต่งหน้าทุก 1–2 สัปดาห์ และไม่ให้มือจับหน้า</p></div>
+      <div class="row"><h4>แผ่นแปะสิวไฮโดรคอลลอยด์บนสิวหัวหนอง</h4><span class="tag mid">หลักฐานพอใช้</span><p>ช่วยดูดหนอง ป้องกันการแคะ และปกป้องแผล ใช้กับสิวที่มีหัวแล้วเท่านั้น</p></div>
+      <div class="row"><h4>ลดน้ำตาล แป้งขัดขาว และนมสกิมถ้าสงสัย</h4><span class="tag mid">หลักฐานพอใช้</span><p>งานวิจัยบางชิ้นพบว่าอาหารที่ทำให้น้ำตาลพุ่งเร็วสัมพันธ์กับสิวมากขึ้น ผลต่างกันในแต่ละคน ลองปรับ 4–6 สัปดาห์แล้วสังเกต ส่วนช็อกโกแลตหลักฐานยังไม่ชัด</p></div>
+      <div class="row"><h4>นอนพอและจัดการความเครียด</h4><span class="tag mid">หลักฐานพอใช้</span><p>นอนน้อยและเครียดจัดทำให้คอร์ติซอลสูง สิวอักเสบมากขึ้นในหลายคน ดูบทนอนและบทใจ</p></div>
+    </div>
+    <div class="dont" style="margin-top:16px">
+      <b>ไม่แนะนำ</b>
+      <ul>
+        <li>ทายาสีฟัน น้ำมะนาว กระเทียม เกลือ หรือน้ำแข็งบนสิว ระคายเคืองและทำให้เกิดรอยดำ</li>
+        <li>ทาครีมสเตียรอยด์ที่ซื้อเอง ทำให้สิวและผิวหนังอักเสบรอบปากแย่ลง ผิวบางและเป็นรอยแตก</li>
+        <li>ใช้ครีมหน้าใสหรือรักษาสิวที่ไม่มีเลขจดแจ้ง อย. บางตัวผสมสเตียรอยด์หรือปรอท</li>
+        <li>กินยาปฏิชีวนะที่ซื้อเองหรือใช้ยาของคนอื่น ทำให้เชื้อดื้อยาและมีผลข้างเคียง</li>
+        <li>ขัดหน้าด้วยสครับแรง ๆ หรือใช้เครื่องดูดสิวบ่อย</li>
+      </ul>
+    </div>
+
+    <h3>รอยสิวและแผลเป็น</h3>
+    <div class="grid">
+      <div class="panel"><h4>รอยแดงหลังสิว</h4><p>เกิดจากหลอดเลือดขยายหลังอักเสบ มักจางเองใน 3–6 เดือน บางคนนานกว่านั้น</p><p class="meta"><b>ช่วยได้</b> กันแดด กรดอะเซลาอิก ไนอาซินาไมด์ ถ้ายังไม่จางแพทย์ใช้เลเซอร์ที่เน้นหลอดเลือดได้</p></div>
+      <div class="panel"><h4>รอยดำหลังสิว</h4><p>เม็ดสีเพิ่มหลังอักเสบ พบมากในผิวคล้ำ อาจใช้เวลา 3–12 เดือน และเข้มขึ้นเมื่อโดนแดด</p><p class="meta"><b>ช่วยได้</b> กันแดดทุกวัน วิตามินซี ไนอาซินาไมด์ กรดอะเซลาอิก เรตินอยด์ ปอกผิวอ่อน ๆ โดยแพทย์</p></div>
+      <div class="panel"><h4>แผลเป็นหลุมหรือแผลเป็นนูน</h4><p>เกิดจากสิวอักเสบลึกหรือการบีบแคะ ไม่หายเองและครีมทาอย่างเดียวช่วยได้น้อย</p><p class="meta"><b>แพทย์ทำได้</b> ไมโครนีดเดิล เลเซอร์ ปอกผิวด้วยกรด ซับซิชัน ฟิลเลอร์ เริ่มเมื่อสิวสงบแล้ว เพื่อไม่ให้เกิดแผลเป็นใหม่</p></div>
+    </div>
+
+    <h3>ตารางดูแลหน้าสำหรับคนเป็นสิว</h3>
+    <div class="two">
+      <div class="panel"><h4>เช้า</h4>
+        <ol class="steps" style="margin-top:10px">
+          <li><div><b>ล้างหน้าอ่อนโยน</b></div></li>
+          <li><div><b>เบนซอยล์เพอร็อกไซด์ หรือกรดอะเซลาอิก</b> <span>(ถ้าใช้)</span></div></li>
+          <li><div><b>มอยส์เจอไรเซอร์เจล</b></div></li>
+          <li><div><b>กันแดดสูตรไม่อุดตัน</b></div></li>
+        </ol>
+      </div>
+      <div class="panel"><h4>เย็น</h4>
+        <ol class="steps" style="margin-top:10px">
+          <li><div><b>ล้างกันแดดและเครื่องสำอางให้หมด</b></div></li>
+          <li><div><b>ล้างหน้าอ่อนโยนอีกรอบ</b></div></li>
+          <li><div><b>อะดาพาลีนทั้งหน้า</b> <span>(เริ่ม 2–3 คืนต่อสัปดาห์)</span></div></li>
+          <li><div><b>มอยส์เจอไรเซอร์</b></div></li>
+        </ol>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:12px">เพิ่มตัวใหม่ครั้งละหนึ่งอย่าง ห่างกัน 2 สัปดาห์ และถ่ายรูปในแสงเดิมทุก 2 สัปดาห์เพื่อเทียบผล</p>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>ควรพบแพทย์ผิวหนังเมื่อ</h4>
+      <ul>
+        <li>เป็นก้อนลึกเจ็บ หรือเริ่มเกิดแผลเป็นและรอยดำเข้ม</li>
+        <li>ใช้ยาทาอย่างต่อเนื่อง 8–12 สัปดาห์แล้วไม่ดีขึ้น</li>
+        <li>สิวขึ้นพร้อมประจำเดือนผิดปกติ ขนดก ผมบาง หรือน้ำหนักขึ้นเร็ว</li>
+        <li>สิวขึ้นกะทันหันหลังเริ่มยาหรืออาหารเสริมตัวใหม่</li>
+        <li>ตั้งครรภ์ หรือวางแผนตั้งครรภ์ และต้องการใช้ยาสิว</li>
+        <li>สิวทำให้รู้สึกหมดความมั่นใจ เก็บตัว หรือเศร้าต่อเนื่อง สิวเป็นโรคที่รักษาได้ และการดูแลใจก็สำคัญ ดูบทใจ</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== ฮอร์โมน ===================== -->
+  <section class="ch" id="hormone" data-g="hormone">
+    <div class="ch-head">
+      <div class="eyebrow">ระบบฮอร์โมน</div>
+      <h2>ฮอร์โมนทำหน้าที่อะไร และดูแลอย่างไร</h2>
+      <p>ฮอร์โมนเป็นสารสื่อสารที่ต่อมไร้ท่อสร้างขึ้น ส่งผ่านกระแสเลือดไปสั่งงานเซลล์ ความสมดุลของมันส่งผลต่อผิว การนอน น้ำหนัก และอารมณ์</p>
+    </div>
+
+    <h3>ฮอร์โมนสำคัญ 8 ตัว</h3>
+    <details class="h" open>
+      <summary><b>คอร์ติซอล</b><small>ฮอร์โมนความเครียด จากต่อมหมวกไต</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>คุมน้ำตาลในเลือด ความดัน การตอบสนองต่อความเครียด และจังหวะตื่นกับหลับ สูงช่วงเช้าและต่ำลงช่วงกลางคืน</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>สูงเรื้อรังทำให้นอนไม่หลับ ผิวบางและฟื้นตัวช้า สิวขึ้น ไขมันสะสมที่หน้าท้อง</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>นอนเป็นเวลา ออกกำลังกายพอดี ไม่หักโหม พักจากหน้าจอ ลดคาเฟอีนช่วงบ่าย</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>อินซูลิน</b><small>จากตับอ่อน</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>พาน้ำตาลจากเลือดเข้าไปในเซลล์เพื่อใช้เป็นพลังงาน</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>ดื้ออินซูลินทำให้คอดำ รักแร้ดำ น้ำหนักลงพุง และเพิ่มเสี่ยงเบาหวานและ PCOS</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>ลดน้ำตาลและแป้งขัดขาว กินใยอาหารและโปรตีน เดินหลังมื้ออาหาร ฝึกกล้ามเนื้อสัปดาห์ละ 2 ครั้ง</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>เมลาโทนิน</b><small>จากต่อมไพเนียลในสมอง</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>บอกร่างกายว่าถึงเวลากลางคืน เริ่มเพิ่มราว 1–2 ชั่วโมงก่อนนอนเมื่อแสงลดลง แสงสว่างตอนกลางคืนลดการหลั่ง</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>นอนหลับยากและตื่นกลางดึก ผิวหมองและขอบตาคล้ำเพราะซ่อมแซมไม่พอ</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>รับแสงธรรมชาติตอนเช้า หรี่ไฟและลดจอ 1 ชั่วโมงก่อนนอน ห้องนอนมืดและเย็น ไม่ควรกินเมลาโทนินเสริมเองโดยไม่ปรึกษาแพทย์</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>ฮอร์โมนไทรอยด์ (T3, T4)</b><small>จากต่อมไทรอยด์ที่คอ</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>คุมอัตราการเผาผลาญ อุณหภูมิร่างกาย การเต้นของหัวใจ และการสร้างผิวผมเล็บ</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>ต่ำ: ผิวแห้ง ผมร่วง เหนื่อย หนาวง่าย เปลือกตาบวม สูง: ใจสั่น เหงื่อออกมาก น้ำหนักลด</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>กินอาหารที่มีไอโอดีนพอดี เช่น อาหารทะเลและเกลือเสริมไอโอดีน ตรวจ TSH เมื่อมีอาการหลายอย่างร่วมกัน</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>เอสโตรเจนและโปรเจสเตอโรน</b><small>จากรังไข่เป็นหลัก</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>คุมรอบเดือนและการตั้งครรภ์ เอสโตรเจนช่วยให้ผิวชุ่มชื้นและมีคอลลาเจน</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>ลดลงช่วงวัยทองทำให้ผิวบางแห้งและริ้วรอยชัด ตั้งครรภ์หรือยาคุมบางตัวกระตุ้นฝ้าและรอยคล้ำ</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>ทากันแดดเข้มงวด กินโปรตีนและแคลเซียมให้พอ ถ้ามีอาการวัยทองรุนแรงให้ปรึกษาสูตินรีแพทย์ก่อนพิจารณาฮอร์โมนทดแทน</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>เทสโทสเตอโรนและแอนโดรเจน</b><small>จากอัณฑะ รังไข่ ต่อมหมวกไต</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>สร้างกล้ามเนื้อและกระดูก ควบคุมความต้องการทางเพศ และกระตุ้นต่อมไขมันใต้ผิว</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>สูงในผู้หญิงทำให้สิว หน้ามัน ขนดก ผมบาง ประจำเดือนไม่ปกติ ต่ำในผู้ชายทำให้อ่อนเพลียและกล้ามเนื้อลด</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>ฝึกกล้ามเนื้อ นอนพอ คุมน้ำหนัก ถ้าสงสัยให้ตรวจเลือดกับแพทย์ ไม่ซื้อฮอร์โมนหรืออาหารเสริมใช้เอง</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>โกรทฮอร์โมน</b><small>จากต่อมใต้สมอง</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>ซ่อมแซมเนื้อเยื่อ สร้างกล้ามเนื้อและกระดูก หลั่งมากช่วงหลับลึกในครึ่งแรกของคืน</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>นอนไม่พอทำให้หลั่งน้อยลง ฟื้นตัวช้าและผิวขาดการซ่อมแซม</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>นอนเป็นเวลาและหลับให้ลึก ออกกำลังกายระดับปานกลางถึงหนัก</p></div>
+      </div>
+    </details>
+    <details class="h">
+      <summary><b>เลปตินและเกรลิน</b><small>ฮอร์โมนอิ่มและหิว</small></summary>
+      <div class="hb">
+        <div><h5>ทำอะไร</h5><p>เลปตินจากเซลล์ไขมันบอกว่าอิ่ม เกรลินจากกระเพาะอาหารบอกว่าหิว</p></div>
+        <div><h5>ถ้าไม่สมดุล</h5><p>อดนอนทำให้เลปตินลดและเกรลินเพิ่ม หิวง่ายและอยากของหวาน</p></div>
+        <div><h5>ดูแลอย่างไร</h5><p>นอน 7–9 ชั่วโมง กินช้า ๆ มีโปรตีนและใยอาหารทุกมื้อ</p></div>
+      </div>
+    </details>
+    <p class="sub" style="margin-top:12px">ส่วน "ฮอร์โมนแห่งความสุข" อย่างโดพามีน เซโรโทนิน ออกซิโทซิน และเอ็นดอร์ฟิน ส่วนใหญ่จัดเป็นสารสื่อประสาท เพิ่มได้ด้วยแสงแดดตอนเช้า การออกกำลังกาย การอยู่กับคนที่ไว้ใจ และงานอดิเรกที่ชอบ</p>
+
+    <h3 id="rhythm">จังหวะคอร์ติซอลและเมลาโทนินใน 24 ชั่วโมง</h3>
+    <p class="sub">ภาพประกอบเชิงหลักการ สมมติตื่น 06:30 และนอน 23:00 ระดับจริงแตกต่างกันตามบุคคลและตารางชีวิต</p>
+    <div class="chart">
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--warn)"></span>คอร์ติซอล สูงตอนเช้าเพื่อให้ตื่นตัว</span>
+        <span><span class="swatch" style="background:var(--accent)"></span>เมลาโทนิน สูงกลางคืนเพื่อให้หลับ</span>
+      </div>
+      <div id="rhythmBox" aria-label="กราฟจังหวะฮอร์โมนใน 24 ชั่วโมง" role="img"></div>
+    </div>
+
+    <h3>แนวทางดูแลฮอร์โมนให้สมดุล</h3>
+    <div class="grid">
+      <div class="panel"><h4>นอนเวลาเดิม 7–9 ชั่วโมง</h4><p>ส่งผลต่อคอร์ติซอล เมลาโทนิน โกรทฮอร์โมน เลปติน และเกรลินพร้อมกัน เป็นข้อที่คุ้มที่สุด</p></div>
+      <div class="panel"><h4>รับแสงเช้า 10–15 นาที</h4><p>ช่วยตั้งนาฬิกาชีวภาพให้เมลาโทนินขึ้นตรงเวลาตอนกลางคืน ทากันแดดที่หน้าถ้าอยู่กลางแจ้ง</p></div>
+      <div class="panel"><h4>กินให้สมดุล</h4><p>มีโปรตีนทุกมื้อ ผักและใยอาหาร ไขมันดี และลดน้ำตาล ช่วยให้อินซูลินไม่แกว่ง</p></div>
+      <div class="panel"><h4>ออกกำลังกายสม่ำเสมอ</h4><p>คาร์ดิโอระดับปานกลางรวม 150 นาทีต่อสัปดาห์ และเวทเทรนนิงอย่างน้อย 2 ครั้ง</p></div>
+      <div class="panel"><h4>จัดการความเครียด</h4><p>หายใจเข้าช้า ๆ ออกช้ากว่าเข้า 5 นาที เดินกลางแจ้ง คุยกับคนที่ไว้ใจ ถ้าเครียดต่อเนื่องหลายสัปดาห์ให้ขอความช่วยเหลือ</p></div>
+      <div class="panel"><h4>คาเฟอีนและแอลกอฮอล์</h4><p>คาเฟอีนไม่เกินราว 400 มก. ต่อวัน (กาแฟประมาณ 3–4 ถ้วย) และเว้นก่อนนอน 6–8 ชั่วโมง ลดแอลกอฮอล์ และไม่สูบบุหรี่</p></div>
+      <div class="panel"><h4>ตรวจสุขภาพประจำปี</h4><p>วัดน้ำตาลในเลือดและความดัน ตรวจไทรอยด์เมื่อมีอาการ ตามช่วงวัยและความเสี่ยงของครอบครัว</p></div>
+      <div class="panel"><h4>ไม่มีวิธี "ดีท็อกซ์ฮอร์โมน"</h4><p>ผลิตภัณฑ์หรือคอร์สที่อ้างว่าปรับฮอร์โมนในไม่กี่วันไม่มีหลักฐานรองรับ ตับและไตทำหน้าที่นี้อยู่แล้ว</p></div>
+    </div>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>ควรไปตรวจกับแพทย์เมื่อ</h4>
+      <ul>
+        <li>ประจำเดือนขาดหรือมาไม่ปกติเกิน 3 เดือน หรือมีขนดกร่วมกับสิวรุนแรง</li>
+        <li>ใจสั่น เหงื่อออกมาก น้ำหนักลดเร็ว หรืออ้วนขึ้นเร็วทั้งที่กินเท่าเดิม</li>
+        <li>เหนื่อยล้าผิดปกติ หนาวง่าย ผมร่วงมาก ผิวแห้งจัดต่อเนื่อง</li>
+        <li>กระหายน้ำและปัสสาวะบ่อย แผลหายช้า</li>
+        <li>อารมณ์ซึมเศร้า ไม่มีแรง นอนไม่หลับต่อเนื่องเกิน 2 สัปดาห์</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== ภายนอก ===================== -->
+  <section class="ch" id="groom" data-g="groom">
+    <div class="ch-head">
+      <div class="eyebrow">ภายนอก</div>
+      <h2>ผิวหน้า ผม ฟัน กลิ่นตัว และบุคลิก</h2>
+      <p>ความมั่นใจส่วนใหญ่มาจากพื้นฐานที่สะอาดและดูแลสม่ำเสมอ ไม่ใช่ผลิตภัณฑ์แพง</p>
+    </div>
+
+    <h3>สิว ฝ้า และกันแดด</h3>
+    <div class="grid">
+      <div class="panel"><h4>สิว</h4><p>ล้างหน้าวันละ 2 ครั้งด้วยสูตรอ่อนโยน ไม่ถูแรง ตัวช่วยที่มีหลักฐานดีคือเบนซอยล์เพอร็อกไซด์ 2.5–5% อะดาพาลีน และกรดซาลิไซลิก เริ่มทีละตัวและใช้ต่อเนื่อง 8–12 สัปดาห์</p><p class="meta"><b>ควรพบแพทย์</b> เมื่อสิวอักเสบเป็นก้อนลึก เกิดแผลเป็น หรือไม่ดีขึ้นใน 3 เดือน ยากินบางกลุ่มต้องใช้ภายใต้การดูแลของแพทย์เท่านั้น</p><p class="meta"><a href="#acne">อ่านบทสิวทุกชนิดแบบละเอียด</a></p></div>
+      <div class="panel"><h4>ฝ้าและจุดด่างดำ</h4><p>ฝ้าเกี่ยวข้องกับแดด ฮอร์โมน และพันธุกรรม กันแดดทุกวันเป็นพื้นฐานที่สำคัญที่สุด การรักษาใช้เวลาเป็นเดือน และกลับมาได้ถ้าโดนแดดซ้ำ</p><p class="meta"><b>ระวัง</b> ครีมหน้าขาวที่ไม่มีเลขจดแจ้ง อย. อาจมีสารห้ามใช้</p></div>
+      <div class="panel"><h4>กันแดดให้ถูก</h4><p>ใช้ SPF 30 ขึ้นไป ปริมาณประมาณ 2 ข้อนิ้วสำหรับใบหน้าและคอ ทาก่อนออกแดด 15 นาที และทาซ้ำทุก 2 ชั่วโมงเมื่ออยู่กลางแจ้ง แสงแดดผ่านหน้าต่างก็ทำให้ผิวคล้ำได้</p></div>
+    </div>
+
+    <h3>ผมและหนังศีรษะ</h3>
+    <div class="list">
+      <div class="row"><h4>ผมร่วง</h4><span class="tag mid">แยกสาเหตุก่อน</span><p>ร่วมวันละราว 50–100 เส้นเป็นเรื่องปกติ ร่วงเป็นกระจุกหลังเครียดจัด ไข้สูง คลอดบุตร หรือลดน้ำหนักเร็วมักกลับมาเองใน 3–6 เดือน ผมบางตรงกลางหรือเหม่งเป็นแบบพันธุกรรม ขาดธาตุเหล็กและไทรอยด์ผิดปกติก็ทำให้ผมร่วงได้</p></div>
+      <div class="row"><h4>ไมน็อกซิดิลทาหนังศีรษะ</h4><span class="tag good">หลักฐานดี</span><p>ช่วยผมบางแบบพันธุกรรมเมื่อใช้ต่อเนื่อง ต้องใช้นาน 4–6 เดือนจึงเห็นผล และหยุดแล้วผมกลับร่วง</p></div>
+      <div class="row"><h4>ผมร่วงเป็นหย่อมกลม ผมร่วงหมดทั้งศีรษะ หรือหนังศีรษะเจ็บ</h4><span class="tag no">พบแพทย์</span><p>อาจเป็นโรคภูมิคุ้มกันหรือโรคผิวหนัง ควรตรวจก่อนลองรักษาเอง</p></div>
+      <div class="row"><h4>รังแค</h4><span class="tag good">หลักฐานดี</span><p>ใช้แชมพูที่มีซิงค์ไพริไทออน คีโตโคนาโซล หรือซีลีเนียมซัลไฟด์ 2–3 ครั้งต่อสัปดาห์ นวดทิ้งไว้ 3–5 นาทีแล้วล้างออก ไม่เกาแรง</p></div>
+    </div>
+
+    <h3>ฟันและช่องปาก</h3>
+    <div class="grid">
+      <div class="panel"><h4>แปรงฟัน 2 นาที วันละ 2 ครั้ง</h4><p>ใช้ยาสีฟันที่มีฟลูออไรด์ แปรงขนนุ่ม แปรงลิ้นเบา ๆ ไม่ต้องบ้วนน้ำมากหลังแปรงเพื่อให้ฟลูออไรด์ค้างอยู่</p></div>
+      <div class="panel"><h4>ไหมขัดฟันวันละครั้ง</h4><p>ทำความสะอาดซอกฟันที่แปรงเข้าไม่ถึง ช่วยลดเหงือกอักเสบและกลิ่นปาก</p></div>
+      <div class="panel"><h4>พบทันตแพทย์ทุก 6–12 เดือน</h4><p>ขูดหินปูนและตรวจฟันผุตั้งแต่เริ่ม กลิ่นปากที่ไม่หายหลังดูแลสะอาดแล้ว ให้ตรวจเหงือกหรือสาเหตุอื่น</p></div>
+    </div>
+
+    <h3>กลิ่นตัวและความสะอาด</h3>
+    <div class="list">
+      <div class="row"><h4>อาบน้ำและซักเสื้อผ้า</h4><span class="tag good">พื้นฐาน</span><p>กลิ่นเกิดจากแบคทีเรียย่อยเหงื่อ เสื้อผ้าที่เก็บเหงื่อซ้ำควรซักทุกครั้ง ตากให้แห้งสนิท</p></div>
+      <div class="row"><h4>ผลิตภัณฑ์ระงับเหงื่อที่มีอะลูมิเนียม</h4><span class="tag good">หลักฐานดี</span><p>ทาตอนกลางคืนบนผิวแห้งที่รักแร้ ได้ผลกว่าทาตอนเช้า การโกนหรือตัดขนรักแร้ช่วยลดกลิ่นสะสม</p></div>
+      <div class="row"><h4>กลิ่นเปลี่ยนไปกะทันหัน หรือเหงื่อออกมากจนรบกวนชีวิต</h4><span class="tag no">พบแพทย์</span><p>อาจเกี่ยวกับไทรอยด์ เบาหวาน หรือภาวะเหงื่อออกมาก ซึ่งมีวิธีรักษา</p></div>
+    </div>
+
+    <h3>บุคลิกและการแต่งตัว</h3>
+    <div class="grid">
+      <div class="panel"><h4>เสื้อผ้าพอดีตัว</h4><p>ขนาดพอดีสำคัญกว่าราคา สะอาด รีดเรียบ รองเท้าไม่เปื้อน สร้างความประทับใจได้เร็วที่สุด</p></div>
+      <div class="panel"><h4>ท่าทาง สายตา และรอยยิ้ม</h4><p>ยืนตัวตรง ไหล่ผ่อนคลาย สบตาเป็นช่วง ๆ พูดช้าลงเล็กน้อย ทั้งหมดฝึกได้ด้วยการซ้อมหน้ากระจกหรืออัดวิดีโอตัวเอง</p></div>
+      <div class="panel"><h4>เลือกสไตล์ที่ดูแลง่าย</h4><p>เริ่มจากสีพื้นฐาน 3–4 สีที่เข้ากับสีผิว ทรงผมที่ตัดง่าย และเสื้อผ้าที่ใส่ซ้ำได้หลายแบบ</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== นอน ===================== -->
+  <section class="ch" id="sleep" data-g="sleep">
+    <div class="ch-head">
+      <div class="eyebrow">การนอน</div>
+      <h2>นอนให้พอ คือตัวคูณของทุกด้าน</h2>
+      <p>ผู้ใหญ่ส่วนใหญ่ต้องการนอน 7–9 ชั่วโมงต่อคืน การนอนกระทบผิว ฮอร์โมน น้ำหนัก อารมณ์ ความจำ และภูมิคุ้มกันพร้อมกัน</p>
+    </div>
+
+    <h3>เครื่องมือ: คำนวณเวลานอนจากเวลาตื่น</h3>
+    <p class="sub">วงจรการนอนหนึ่งรอบยาวประมาณ 90 นาที การตื่นตอนจบรอบมักรู้สึกสดชื่นกว่า เครื่องมือนี้บวกเวลาหลับ 15 นาที ค่าจริงแต่ละคนต่างกัน</p>
+    <div class="calc">
+      <div class="fields">
+        <div class="fld"><label for="wakeT">เวลาที่ต้องตื่น</label><input type="time" id="wakeT" value="06:30"></div>
+      </div>
+      <div class="outs" id="sleepOut" aria-live="polite"></div>
+      <div class="ex">ค่าเริ่มต้น 06:30 เป็นตัวอย่าง เปลี่ยนเป็นเวลาของคุณ</div>
+    </div>
+
+    <h3>ปรับห้องและพฤติกรรมให้หลับง่าย</h3>
+    <div class="list">
+      <div class="row"><h4>นอนและตื่นเวลาเดิมทุกวัน รวมวันหยุด</h4><span class="tag good">หลักฐานดี</span><p>ความสม่ำเสมอสำคัญกว่าการนอนชดเชยปลายสัปดาห์ ความต่างไม่ควรเกิน 1 ชั่วโมง</p></div>
+      <div class="row"><h4>รับแสงธรรมชาติตอนเช้า</h4><span class="tag good">หลักฐานดี</span><p>แสงเช้าช่วยตั้งนาฬิกาชีวภาพ ทำให้ง่วงตรงเวลาตอนกลางคืน</p></div>
+      <div class="row"><h4>หยุดคาเฟอีนก่อนนอน 6–8 ชั่วโมง</h4><span class="tag good">หลักฐานดี</span><p>คาเฟอีนค้างในร่างกายหลายชั่วโมง รวมชา ชาไข่มุก โคล่า และเครื่องดื่มชูกำลัง</p></div>
+      <div class="row"><h4>ห้องมืด เงียบ และเย็นสบาย</h4><span class="tag good">หลักฐานดี</span><p>ใช้ม่านทึบ ปิดไฟสีขาวสว่าง อุณหภูมิเย็นสบายหลับง่ายกว่าห้องอบอุ่น</p></div>
+      <div class="row"><h4>วางจอก่อนนอน 30–60 นาที</h4><span class="tag mid">หลักฐานพอใช้</span><p>เนื้อหาที่กระตุ้นสมองมีผลมากพอ ๆ กับแสงจอ เปลี่ยนเป็นหนังสือหรือยืดเหยียดเบา ๆ</p></div>
+      <div class="row"><h4>ใช้เตียงเพื่อนอน</h4><span class="tag mid">หลักฐานพอใช้</span><p>ถ้านอนไม่หลับเกินประมาณ 20 นาที ให้ลุกไปทำกิจกรรมเงียบ ๆ ใต้แสงสลัว แล้วกลับมาเมื่อง่วง</p></div>
+      <div class="row"><h4>งีบกลางวันไม่เกิน 20–30 นาที ก่อนบ่าย 3</h4><span class="tag mid">หลักฐานพอใช้</span><p>งีบยาวหรือสายเกินไปทำให้กลางคืนหลับยาก</p></div>
+      <div class="row"><h4>แอลกอฮอล์ช่วยให้หลับไว</h4><span class="tag no">ไม่แนะนำ</span><p>หลับเร็วขึ้นแต่คุณภาพการหลับแย่ลงและตื่นกลางดึกบ่อยขึ้น</p></div>
+    </div>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>ควรพบแพทย์เมื่อ</h4>
+      <ul>
+        <li>นอนไม่หลับอย่างน้อย 3 คืนต่อสัปดาห์ นานเกิน 3 เดือน (มีวิธีรักษาที่ได้ผลดีโดยไม่ต้องใช้ยานอนหลับ เช่น CBT-I)</li>
+        <li>กรนดัง สะดุ้งตื่นเพราะสำลัก หยุดหายใจ และง่วงมากตอนกลางวัน อาจเป็นภาวะหยุดหายใจขณะหลับ</li>
+        <li>ง่วงจนเผลอหลับระหว่างขับรถหรือทำงาน</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== อาหาร ===================== -->
+  <section class="ch" id="food" data-g="food">
+    <div class="ch-head">
+      <div class="eyebrow">อาหารและน้ำ</div>
+      <h2>กินอย่างไรให้ร่างกายและผิวดี</h2>
+      <p>ไม่มีอาหารวิเศษอย่างเดียว สิ่งที่ได้ผลคือรูปแบบการกินที่ทำได้ทุกวัน ครบหมู่ ไม่หวานหรือเค็มเกิน</p>
+    </div>
+
+    <h3>จานอาหารที่สมดุล</h3>
+    <div class="grid">
+      <div class="panel"><h4>ครึ่งจาน: ผักและผลไม้</h4><p>หลากสี ให้ใยอาหาร วิตามิน และสารต้านอนุมูลอิสระ ผักสดและผักสุกนับได้เท่ากัน</p></div>
+      <div class="panel"><h4>หนึ่งในสี่: โปรตีน</h4><p>ไข่ ปลา เนื้อไม่ติดมัน เต้าหู้ ถั่ว ช่วยให้อิ่มนาน รักษากล้ามเนื้อ และสร้างผิว ผม เล็บ</p></div>
+      <div class="panel"><h4>หนึ่งในสี่: แป้งเชิงซ้อน</h4><p>ข้าวกล้อง ข้าวสาลีเต็มเมล็ด มันเทศ ให้พลังงานคงที่กว่าแป้งขัดขาว</p></div>
+      <div class="panel"><h4>ไขมันดี</h4><p>ปลาทะเล ถั่ว อะโวคาโด น้ำมันมะกอก ไขมันดีช่วยดูดซึมวิตามินที่ละลายในไขมัน</p></div>
+    </div>
+
+    <h3>เครื่องมือ: ประมาณพลังงาน โปรตีน และน้ำที่ควรได้</h3>
+    <p class="sub">ใช้สูตรมาตรฐาน (Mifflin-St Jeor) ได้ค่าประมาณเท่านั้น ไม่เหมาะกับเด็ก ผู้ตั้งครรภ์ ให้นมบุตร หรือผู้มีโรคประจำตัว ซึ่งควรให้นักโภชนาการหรือแพทย์ประเมิน</p>
+    <div class="calc">
+      <div class="fields">
+        <div class="fld"><label for="nSex">เพศตามร่างกาย</label><select id="nSex"><option value="f">หญิง</option><option value="m">ชาย</option></select></div>
+        <div class="fld"><label for="nAge">อายุ (ปี)</label><input type="number" id="nAge" min="18" max="90" value="25" inputmode="numeric"></div>
+        <div class="fld"><label for="nW">น้ำหนัก (กก.)</label><input type="number" id="nW" min="30" max="250" value="60" inputmode="decimal"></div>
+        <div class="fld"><label for="nH">ส่วนสูง (ซม.)</label><input type="number" id="nH" min="120" max="230" value="165" inputmode="numeric"></div>
+        <div class="fld"><label for="nAct">การใช้ชีวิต</label>
+          <select id="nAct">
+            <option value="1.2">นั่งทำงานเป็นหลัก</option>
+            <option value="1.375" selected>ออกกำลังเบา 1–3 วัน/สัปดาห์</option>
+            <option value="1.55">ออกกำลังปานกลาง 3–5 วัน</option>
+            <option value="1.725">ออกกำลังหนัก 6–7 วัน</option>
+          </select>
+        </div>
+      </div>
+      <div class="outs" id="nutOut" aria-live="polite"></div>
+      <div class="ex">ค่าเริ่มต้นเป็นตัวอย่าง แก้เป็นข้อมูลของคุณ หากต้องการลดหรือเพิ่มน้ำหนัก ให้ปรับจากค่าพลังงานทีละน้อยประมาณ 10–20% และดูแนวโน้มอย่างน้อย 2–4 สัปดาห์</div>
+    </div>
+
+    <h3>ตัวเลขที่ควรรู้</h3>
+    <div class="list">
+      <div class="row"><h4>น้ำตาลเติมไม่เกิน 6 ช้อนชาต่อวัน</h4><span class="tag good">แนวทางไทย</span><p>แก้วชานมไข่มุกหรือน้ำอัดลมหนึ่งแก้วอาจมีน้ำตาลเกินกว่านี้ ลดความหวานทีละระดับ ลิ้นจะปรับเองภายใน 2–3 สัปดาห์</p></div>
+      <div class="row"><h4>โซเดียมไม่เกิน 2,000 มก. ต่อวัน</h4><span class="tag good">แนวทางไทย</span><p>เทียบเท่าเกลือราว 1 ช้อนชา รวมน้ำปลา ซีอิ๊ว ซุปก้อน และบะหมี่กึ่งสำเร็จรูป ชิมก่อนปรุง</p></div>
+      <div class="row"><h4>ผักและผลไม้รวมอย่างน้อย 400 กรัมต่อวัน</h4><span class="tag good">แนวทาง WHO</span><p>ประมาณ 5 กำมือ เพิ่มผักในมื้อเดิมง่ายกว่าเพิ่มมื้อใหม่</p></div>
+      <div class="row"><h4>ดื่มน้ำเมื่อกระหายและให้ปัสสาวะสีเหลืองอ่อน</h4><span class="tag mid">ใช้เป็นเกณฑ์ได้</span><p>ตัวเลขน้ำต่อวันเป็นค่าประมาณ ขึ้นกับอากาศ เหงื่อ และอาหาร ไม่ต้องบังคับให้ดื่มจนจุก</p></div>
+    </div>
+
+    <h3>อาหารกับผิวและฮอร์โมน</h3>
+    <div class="grid">
+      <div class="panel"><h4>น้ำตาลและแป้งขัดขาวมาก</h4><p>ทำให้อินซูลินพุ่งบ่อย เกี่ยวข้องกับสิวและคอดำในบางคน</p></div>
+      <div class="panel"><h4>ปลาและถั่ว</h4><p>โอเมก้า 3 ช่วยลดการอักเสบ กินปลาทะเลสัปดาห์ละ 2 ครั้งเป็นแนวทางทั่วไป</p></div>
+      <div class="panel"><h4>ผักผลไม้สีสด</h4><p>วิตามินซี เบต้าแคโรทีน และโพลีฟีนอล ช่วยปกป้องผิวจากอนุมูลอิสระ ไม่ได้แทนที่ครีมกันแดด</p></div>
+      <div class="panel"><h4>อาหารเสริม</h4><p>ถ้ากินครบหมู่ส่วนใหญ่ไม่จำเป็น ตรวจเลือดก่อนเสริมธาตุเหล็กหรือวิตามินดี ไม่ซื้อคอลลาเจนหรือผลิตภัณฑ์ลดน้ำหนักที่สัญญาผลเร็ว</p></div>
+    </div>
+    <div class="dont" style="margin-top:16px">
+      <b>ไม่แนะนำ</b>
+      <ul>
+        <li>อดอาหาร ดีท็อกซ์ หรือกินมื้อเดียวเพื่อลดน้ำหนักเร็ว ทำให้กล้ามเนื้อลดและฮอร์โมนรวน</li>
+        <li>ตัดกลุ่มอาหารทั้งกลุ่มโดยไม่มีเหตุผลทางการแพทย์</li>
+        <li>ซื้อยาลดความอ้วนหรืออาหารเสริมที่ไม่มี อย. มากิน</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== ออกกำลังกาย ===================== -->
+  <section class="ch" id="move" data-g="move">
+    <div class="ch-head">
+      <div class="eyebrow">ออกกำลังกายและท่าทาง</div>
+      <h2>ขยับให้พอ ฝึกกล้ามเนื้อ และนั่งให้ถูก</h2>
+      <p>การออกกำลังกายช่วยอินซูลิน ฮอร์โมน การนอน อารมณ์ และผิว เป้าหมายแรกคือทำให้เป็นนิสัย ไม่ใช่ทำให้หนัก</p>
+    </div>
+
+    <h3>เป้าหมายพื้นฐานสำหรับผู้ใหญ่</h3>
+    <div class="grid">
+      <div class="panel"><h4>คาร์ดิโอ 150 นาที/สัปดาห์</h4><p>ระดับปานกลาง เช่น เดินเร็ว ปั่นจักรยาน ว่ายน้ำ พูดได้แต่ร้องเพลงไม่ไหว หรือ 75 นาทีถ้าหนักมาก แบ่งเป็นวันละ 20–30 นาทีได้</p></div>
+      <div class="panel"><h4>ฝึกกล้ามเนื้อ 2 วัน/สัปดาห์</h4><p>ครบทุกกลุ่มหลัก ขา หลัง อก ไหล่ แขน แกนกลางลำตัว ใช้ยางยืด ดัมเบล หรือน้ำหนักตัว</p></div>
+      <div class="panel"><h4>ขยับตลอดวัน</h4><p>ก้าวเดินประมาณ 7,000–8,000 ก้าวต่อวันเกี่ยวข้องกับสุขภาพดีขึ้นชัดเจน ลุกเดินทุก 30–60 นาที</p></div>
+    </div>
+
+    <h3>ตัวอย่างตารางสัปดาห์สำหรับผู้เริ่มต้น</h3>
+    <div class="scroll">
+      <table class="week">
+        <thead><tr><th>วัน</th><th>กิจกรรม</th><th>เวลา</th></tr></thead>
+        <tbody>
+          <tr><td>จันทร์</td><td>เวทเต็มตัว: สควอตเก้าอี้ ดันพื้นกับผนัง พายยางยืด แพลงก์เข่า</td><td>25 นาที</td></tr>
+          <tr><td>อังคาร</td><td>เดินเร็วหรือปั่นจักรยาน</td><td>30 นาที</td></tr>
+          <tr><td>พุธ</td><td>ยืดเหยียดและโยคะเบา ๆ</td><td>20 นาที</td></tr>
+          <tr><td>พฤหัสบดี</td><td>เวทเต็มตัว เพิ่มหนึ่งเซ็ตจากครั้งก่อน</td><td>25 นาที</td></tr>
+          <tr><td>ศุกร์</td><td>เดินเร็วหรือว่ายน้ำ</td><td>30 นาที</td></tr>
+          <tr><td>เสาร์</td><td>กิจกรรมที่ชอบ เช่น เดินป่า เต้น กีฬา</td><td>30–60 นาที</td></tr>
+          <tr><td>อาทิตย์</td><td>พัก หรือเดินเล่นเบา ๆ</td><td>ตามสบาย</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:12px">เพิ่มความหนักทีละน้อย ครั้งละไม่เกินประมาณ 10% อบอุ่นร่างกาย 5 นาทีก่อนเริ่ม ถ้าเจ็บแปลบหรือเวียนหัวให้หยุด มีโรคหัวใจ ความดัน หรือกำลังตั้งครรภ์ ควรปรึกษาแพทย์ก่อน</p>
+
+    <h3>ท่านั่ง คอ และสายตา</h3>
+    <div class="list">
+      <div class="row"><h4>ยกจอขึ้นให้ขอบบนอยู่ระดับสายตา</h4><span class="tag good">หลักฐานดี</span><p>ก้มคอมองโทรศัพท์นาน ๆ ทำให้ปวดคอบ่าไหล่ ยกโทรศัพท์ขึ้นระดับอกหรือหน้า และพักจากการก้ม</p></div>
+      <div class="row"><h4>กฎ 20-20-20</h4><span class="tag mid">หลักฐานพอใช้</span><p>ทุก 20 นาที มองไกลประมาณ 6 เมตร นาน 20 วินาที ลดตาล้าและช่วยให้กะพริบตามากขึ้น ลดอาการตาแห้งที่ทำให้ขยี้ตา</p></div>
+      <div class="row"><h4>ลุกยืดเหยียดทุก 30–60 นาที</h4><span class="tag good">หลักฐานดี</span><p>การนั่งต่อเนื่องนานเพิ่มความเสี่ยงต่อสุขภาพ แม้ออกกำลังกายแล้ว ให้ลุกเดินหรือยืดเหยียด 2–3 นาที</p></div>
+      <div class="row"><h4>ยืดคอและอกวันละครั้ง</h4><span class="tag mid">หลักฐานพอใช้</span><p>ค่อย ๆ เอียงหูเข้าหาไหล่ค้างไว้ 20–30 วินาที ทำสลับข้าง แล้วกางแขนยืดอกกับขอบประตู ไม่กระชากหรือเด้ง</p></div>
+    </div>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>ควรพบแพทย์เมื่อ</h4>
+      <ul>
+        <li>เจ็บแน่นหน้าอก หายใจไม่ทัน หรือเวียนศีรษะรุนแรงขณะออกกำลังกาย (กรณีรุนแรงให้โทร 1669)</li>
+        <li>ปวดคอหรือหลังร้าวลงแขนขา ชา หรืออ่อนแรง</li>
+        <li>ปวดข้อบวมแดงที่ไม่หายใน 1–2 สัปดาห์</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== ใจ ===================== -->
+  <section class="ch" id="mind" data-g="mind">
+    <div class="ch-head">
+      <div class="eyebrow">จิตใจ</div>
+      <h2>ดูแลใจ จัดการความเครียด และรู้ว่าเมื่อไรควรขอความช่วยเหลือ</h2>
+      <p>ความเครียดเป็นเรื่องปกติและมีประโยชน์ในปริมาณพอดี ปัญหาคือเครียดสะสมโดยไม่ได้พัก เครื่องมือด้านล่างใช้ได้ทุกวัน</p>
+    </div>
+
+    <h3>เครื่องมือ: จังหวะหายใจให้ใจสงบ</h3>
+    <p class="sub">การหายใจออกยาวกว่าหายใจเข้าช่วยให้ร่างกายผ่อนคลายลง ทำ 2–5 นาที ถ้าเวียนหัวให้หยุดแล้วหายใจปกติ</p>
+    <div class="tool">
+      <div class="fld" style="width:min(320px,100%)"><label for="bPat">รูปแบบ</label>
+        <select id="bPat">
+          <option value="46">เข้า 4 ออก 6 (เริ่มต้น)</option>
+          <option value="box">กล่อง 4-4-4-4</option>
+          <option value="478">เข้า 4 กลั้น 7 ออก 8</option>
+        </select>
+      </div>
+      <div class="breath" id="breathDot" aria-live="polite"><span id="breathTxt">พร้อมเริ่ม</span></div>
+      <div class="row-btn"><button type="button" class="btn" id="breathBtn">เริ่ม</button></div>
+    </div>
+
+    <h3>5 วิธีลดความเครียดที่มีหลักฐาน</h3>
+    <div class="list">
+      <div class="row"><h4>เคลื่อนไหวร่างกาย</h4><span class="tag good">หลักฐานดี</span><p>เดินเร็ว 20–30 นาทีช่วยลดความเครียดและอารมณ์ซึมเศร้าระดับเบาได้</p></div>
+      <div class="row"><h4>เชื่อมต่อกับคน</h4><span class="tag good">หลักฐานดี</span><p>คุยกับคนที่ไว้ใจ ไม่ต้องหาทางแก้ แค่มีคนฟัง ความเหงาเรื้อรังส่งผลต่อสุขภาพไม่ต่างจากความเครียด</p></div>
+      <div class="row"><h4>จดบันทึกความคิด</h4><span class="tag mid">หลักฐานพอใช้</span><p>เขียนสิ่งที่กังวลลงกระดาษ 10 นาทีก่อนนอน ช่วยให้สมองหยุดวนคิด</p></div>
+      <div class="row"><h4>แสงแดดและธรรมชาติ</h4><span class="tag mid">หลักฐานพอใช้</span><p>อยู่กลางแจ้ง 20 นาที ช่วยลดความตึงเครียดและช่วยนาฬิกาชีวภาพ</p></div>
+      <div class="row"><h4>ฝึกสติหรือสมาธิสั้น ๆ</h4><span class="tag mid">หลักฐานพอใช้</span><p>เริ่มวันละ 5 นาที โฟกัสลมหายใจ เมื่อใจหลุดก็พากลับมาโดยไม่ตำหนิตัวเอง</p></div>
+    </div>
+
+    <h3>แบบฝึก: บันทึกความคิด 3 ช่อง</h3>
+    <div class="scroll">
+      <table style="min-width:620px">
+        <thead><tr><th>เหตุการณ์</th><th>ความคิดอัตโนมัติ</th><th>มุมมองที่สมดุลกว่า</th></tr></thead>
+        <tbody>
+          <tr><td>เพื่อนไม่ตอบแชต</td><td>เขาโกรธเราแน่ ๆ</td><td>เขาอาจกำลังยุ่ง ถ้ากังวลจริงให้ถามตรง ๆ</td></tr>
+          <tr><td>งานพรีเซนต์ติดขัดช่วงหนึ่ง</td><td>ฉันแย่มาก ทุกคนเห็นแล้ว</td><td>ส่วนใหญ่ราบรื่น พลาดนิดเดียว ครั้งหน้าซ้อมเพิ่มช่วงนั้น</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:10px">ตัวอย่างข้างบนใช้ดูวิธีเขียน ลองจดเหตุการณ์ของตัวเองลงสมุดทุกวัน ถามตัวเองว่ามีหลักฐานอะไรสนับสนุนและขัดแย้งกับความคิดนั้น</p>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>ควรขอความช่วยเหลือจากผู้เชี่ยวชาญเมื่อ</h4>
+      <ul>
+        <li>เศร้า หมดความสนใจ หรือกังวลเกือบทุกวันนานเกิน 2 สัปดาห์ จนกระทบการทำงาน การเรียน หรือความสัมพันธ์</li>
+        <li>นอนไม่หลับ ใจสั่น หรือตื่นตระหนกบ่อย</li>
+        <li>รู้สึกหมดไฟ ไม่มีแรงใจแม้พักแล้ว</li>
+        <li><b>มีความคิดอยากทำร้ายตัวเองหรืออยากไม่มีชีวิตอยู่</b> ให้บอกคนที่ไว้ใจทันที และโทรสายด่วนสุขภาพจิต <b>1323</b> (ตลอด 24 ชั่วโมง) ถ้าอยู่ในอันตรายเฉียบพลัน โทร <b>1669</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== นิสัยและเวลา ===================== -->
+  <section class="ch" id="habit" data-g="habit">
+    <div class="ch-head">
+      <div class="eyebrow">นิสัยและการจัดการเวลา</div>
+      <h2>สร้างนิสัยที่อยู่ได้จริง และใช้เวลาให้คุ้ม</h2>
+      <p>แรงจูงใจขึ้นลงทุกวัน ระบบที่ออกแบบดีจะพาคุณไปต่อได้ในวันที่ไม่อยากทำ</p>
+    </div>
+
+    <h3>หลักสร้างนิสัย</h3>
+    <div class="grid">
+      <div class="panel"><h4>เริ่มเล็กจนไม่มีข้ออ้าง</h4><p>เปลี่ยน "วิ่ง 5 กม." เป็น "ใส่รองเท้าและเดิน 2 นาที" ความสม่ำเสมอสร้างก่อน ความหนักค่อยเพิ่มทีหลัง</p></div>
+      <div class="panel"><h4>ผูกกับสิ่งที่ทำอยู่แล้ว</h4><p>เขียนเป็นประโยค "หลังแปรงฟันตอนเช้า ฉันจะทาครีมกันแดด" สิ่งที่ทำอยู่แล้วทำหน้าที่เป็นสัญญาณเริ่มต้น</p></div>
+      <div class="panel"><h4>จัดสภาพแวดล้อม</h4><p>วางชุดออกกำลังกายไว้ข้างเตียง เก็บขนมไว้ที่สูง ทำให้สิ่งดีง่ายและสิ่งไม่ดียากขึ้น</p></div>
+      <div class="panel"><h4>ไม่พลาดสองครั้งติด</h4><p>พลาดหนึ่งวันไม่ทำให้เสียทุกอย่าง แต่การปล่อยต่ออีกวันเริ่มกลายเป็นนิสัยใหม่ ให้กลับมาทำเวอร์ชันเล็กที่สุด</p></div>
+    </div>
+    <p class="sub" style="margin-top:12px">งานวิจัยชิ้นหนึ่งพบว่านิสัยใหม่ใช้เวลาเฉลี่ยราว 66 วันกว่าจะเป็นอัตโนมัติ และแต่ละคนต่างกันมาก ตั้งแต่ไม่กี่สัปดาห์ถึงหลายเดือน อย่าตัดสินตัวเองที่ 21 วัน</p>
+
+    <h3>จัดลำดับความสำคัญ: เมทริกซ์ 4 ช่อง</h3>
+    <div class="matrix">
+      <div><b>สำคัญและด่วน</b><span>ทำทันที เช่น ส่งงานวันนี้ เรื่องฉุกเฉิน</span></div>
+      <div><b>สำคัญแต่ไม่ด่วน</b><span>จองเวลาไว้ล่วงหน้า เช่น ออกกำลังกาย เรียนรู้ ออมเงิน นี่คือช่องที่สร้างอนาคต</span></div>
+      <div><b>ด่วนแต่ไม่สำคัญ</b><span>มอบหมายหรือตอบสั้น ๆ เช่น แจ้งเตือน แชตทั่วไป</span></div>
+      <div><b>ไม่ด่วนและไม่สำคัญ</b><span>ตัดทิ้งหรือจำกัดเวลา เช่น เลื่อนโซเชียลไม่มีจุดหมาย</span></div>
+    </div>
+
+    <h3>เครื่องมือ: จับเวลาโฟกัส (โพโมโดโร)</h3>
+    <p class="sub">ทำงานหนึ่งอย่างต่อเนื่อง 25 นาที แล้วพัก 5 นาที ทุก 4 รอบพักยาว 15–30 นาที ปิดแจ้งเตือนระหว่างโฟกัส</p>
+    <div class="tool">
+      <div class="kicker" id="pomoMode">โฟกัส</div>
+      <div class="dial" id="pomoDial" role="timer" aria-live="off">25:00</div>
+      <div class="row-btn">
+        <button type="button" class="btn" id="pomoGo">เริ่ม</button>
+        <button type="button" class="btn ghost" id="pomoSkip">สลับโหมด</button>
+        <button type="button" class="btn ghost" id="pomoReset">รีเซ็ต</button>
+      </div>
+      <div class="ex" id="pomoCount">รอบที่เสร็จวันนี้: 0</div>
+    </div>
+
+    <h3>นิสัยการใช้เวลาที่ได้ผล</h3>
+    <div class="list">
+      <div class="row"><h4>เลือกงานสำคัญ 3 อย่างของวัน</h4><span class="tag good">ใช้ได้ผล</span><p>เขียนตั้งแต่เมื่อคืนหรือเช้า ทำอย่างแรกก่อนเปิดแชตหรือโซเชียล</p></div>
+      <div class="row"><h4>จองเวลาในปฏิทินให้งานสำคัญ</h4><span class="tag good">ใช้ได้ผล</span><p>งานที่ไม่มีเวลาของมัน มักไม่ได้ทำ ใส่เวลาออกกำลังกายและเรียนรู้เหมือนนัดสำคัญ</p></div>
+      <div class="row"><h4>ปิดแจ้งเตือนที่ไม่จำเป็น</h4><span class="tag good">ใช้ได้ผล</span><p>เปิดเฉพาะโทรศัพท์และแชตที่เกี่ยวกับงานจริง ตอบแชตเป็นรอบ ๆ ไม่ตอบทุกครั้งที่เด้ง</p></div>
+      <div class="row"><h4>ทบทวนประจำสัปดาห์ 15 นาที</h4><span class="tag good">ใช้ได้ผล</span><p>ถามสามข้อ อะไรไปได้ดี อะไรติด สัปดาห์หน้าจะลองปรับอะไรหนึ่งอย่าง</p></div>
+      <div class="row"><h4>ทำหลายอย่างพร้อมกัน</h4><span class="tag no">ไม่แนะนำ</span><p>การสลับงานบ่อยทำให้ช้าลงและผิดพลาดมากขึ้น</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== เรียนรู้ ===================== -->
+  <section class="ch" id="learn" data-g="learn">
+    <div class="ch-head">
+      <div class="eyebrow">การเรียนรู้และทักษะ</div>
+      <h2>เรียนให้จำได้นาน และฝึกทักษะให้เก่งขึ้นจริง</h2>
+      <p>การอ่านซ้ำและไฮไลต์รู้สึกว่าเรียนแล้ว แต่ผลต่อความจำน้อยกว่าที่คิด วิธีที่ได้ผลคือดึงข้อมูลออกมาใช้และทบทวนห่าง ๆ</p>
+    </div>
+
+    <h3>เทคนิคที่หลักฐานแน่นที่สุด</h3>
+    <div class="grid">
+      <div class="panel"><h4>ดึงความจำ (active recall)</h4><p>ปิดหนังสือแล้วเขียนหรือพูดสิ่งที่จำได้ก่อน แล้วค่อยตรวจ การทดสอบตัวเองได้ผลกว่าการอ่านซ้ำ</p></div>
+      <div class="panel"><h4>ทบทวนแบบเว้นระยะ</h4><p>ทบทวนก่อนลืม ที่ 1, 3, 7, 14 และ 30 วัน ใช้แฟลชการ์ดหรือแอป ใช้เวลารวมน้อยลงแต่จำนานกว่า</p></div>
+      <div class="panel"><h4>อธิบายให้เด็กฟัง (Feynman)</h4><p>อธิบายเรื่องที่เรียนด้วยภาษาง่ายที่สุด ตรงไหนติดแปลว่ายังไม่เข้าใจ กลับไปอ่านเฉพาะส่วนนั้น</p></div>
+      <div class="panel"><h4>สลับหัวข้อ</h4><p>ฝึกโจทย์หลายแบบปนกันแทนทำแบบเดียวซ้ำ ๆ ช่วยให้แยกแยะวิธีใช้ได้ดีขึ้น</p></div>
+    </div>
+
+    <h3>เครื่องมือ: ตารางวันทบทวน</h3>
+    <p class="sub">เลือกวันที่เรียนเรื่องใหม่ ระบบคำนวณวันทบทวนให้ทันที</p>
+    <div class="calc">
+      <div class="fields"><div class="fld"><label for="rvDate">วันที่เรียน</label><input type="date" id="rvDate"></div></div>
+      <div class="outs" id="rvOut" aria-live="polite"></div>
+    </div>
+
+    <h3>ฝึกทักษะให้เก่งขึ้น</h3>
+    <div class="list">
+      <div class="row"><h4>เลือกทักษะเดียวต่อช่วงหนึ่ง</h4><span class="tag good">ใช้ได้ผล</span><p>เช่น ภาษาอังกฤษ การเขียน โค้ด ดนตรี ตั้งเป้าเล็ก วัดผลได้ เช่น เขียนหนึ่งย่อหน้าทุกวันเป็นเวลา 30 วัน</p></div>
+      <div class="row"><h4>ฝึกแบบตั้งใจ</h4><span class="tag good">หลักฐานดี</span><p>เลือกส่วนที่ยังทำไม่ได้ ฝึกซ้ำจนได้ รับคำติชมจากผู้รู้หรือเทียบกับตัวอย่างที่ดี ไม่ใช่ทำซ้ำสิ่งที่เก่งอยู่แล้ว</p></div>
+      <div class="row"><h4>ทำโปรเจกต์จริง</h4><span class="tag good">ใช้ได้ผล</span><p>ผลงานชิ้นเล็กที่เสร็จจริง สอนได้มากกว่าดูคอร์สจบ 10 คอร์ส</p></div>
+      <div class="row"><h4>อ่านวันละ 15–20 นาที</h4><span class="tag mid">สร้างนิสัยง่าย</span><p>หนังสือ 1 เล่มต่อเดือนเป็นไปได้ด้วยเวลาเพียงเท่านี้ จดสามประโยคว่าจะเอาอะไรไปใช้</p></div>
+      <div class="row"><h4>เรียนภาษา: ฟังและพูดทุกวัน</h4><span class="tag mid">ใช้ได้ผล</span><p>เรียนวันละ 20–30 นาทีดีกว่าอัดวันเดียวนาน ๆ ฟังของที่สนใจและพูดออกเสียงตาม</p></div>
+      <div class="row"><h4>เรียนหลายคอร์สพร้อมกัน แต่ไม่ลงมือทำ</h4><span class="tag no">ไม่แนะนำ</span><p>รู้สึกก้าวหน้าแต่ไม่ได้ทักษะ ทุกครั้งที่เรียนจบหนึ่งบท ให้ทำหนึ่งอย่างจริง</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== เงิน ===================== -->
+  <section class="ch" id="money" data-g="money">
+    <div class="ch-head">
+      <div class="eyebrow">การเงินส่วนบุคคล</div>
+      <h2>จัดระบบเงินให้ใจสบาย</h2>
+      <p>ความรู้ทั่วไปเพื่อวางพื้นฐาน ไม่ใช่คำแนะนำการลงทุนเฉพาะบุคคล ก่อนตัดสินใจเรื่องใหญ่ ควรปรึกษาผู้เชี่ยวชาญที่ได้รับใบอนุญาต</p>
+    </div>
+
+    <h3>ลำดับที่มักได้ผล</h3>
+    <ol class="steps">
+      <li><div><b>จดรายรับรายจ่าย 1 เดือน</b><br><span>รู้ก่อนว่าเงินไปไหน ใช้สมุด แอป หรือชีตก็ได้ สิ่งที่ไม่เคยวัด ปรับไม่ได้</span></div></li>
+      <li><div><b>สร้างเงินสำรองฉุกเฉิน 3–6 เดือนของค่าใช้จ่ายจำเป็น</b><br><span>เก็บในบัญชีที่ถอนได้ง่าย แยกจากบัญชีใช้จ่าย เริ่มจากเป้าแรก 1 เดือน</span></div></li>
+      <li><div><b>ปิดหนี้ดอกเบี้ยสูงก่อน</b><br><span>หนี้บัตรเครดิตและสินเชื่อส่วนบุคคลมีดอกเบี้ยสูงมาก จ่ายเกินขั้นต่ำ เริ่มจากก้อนที่ดอกเบี้ยแพงที่สุด หรือก้อนเล็กที่สุดถ้าต้องการกำลังใจ</span></div></li>
+      <li><div><b>มีประกันสุขภาพหรือสิทธิรักษาที่เหมาะ</b><br><span>ค่ารักษาก้อนใหญ่ทำลายแผนการเงินได้เร็วที่สุด ตรวจสิทธิประกันสังคมหรือสวัสดิการที่ทำงานและเปรียบเทียบเงื่อนไขก่อนซื้อ</span></div></li>
+      <li><div><b>ออมและลงทุนระยะยาวอย่างสม่ำเสมอ</b><br><span>กระจายความเสี่ยง เช่น กองทุนรวมดัชนีค่าธรรมเนียมต่ำ ตั้งหักอัตโนมัติทุกเดือน ไม่ทำตามกระแส และไม่ใส่เงินที่ต้องใช้ใน 3–5 ปี</span></div></li>
+    </ol>
+
+    <h3>เครื่องมือ: แบ่งเงิน 50/30/20 และเป้าเงินสำรอง</h3>
+    <p class="sub">50/30/20 เป็นจุดเริ่มต้น แบ่งรายได้หลังหักภาษีเป็น จำเป็น 50% อยากได้ 30% ออมและชำระหนี้ 20% ปรับตามชีวิตจริงได้</p>
+    <div class="calc">
+      <div class="fields">
+        <div class="fld"><label for="mInc">รายได้ต่อเดือน (บาท)</label><input type="number" id="mInc" min="0" step="500" value="25000" inputmode="numeric"></div>
+        <div class="fld"><label for="mExp">ค่าใช้จ่ายจำเป็นต่อเดือน (บาท)</label><input type="number" id="mExp" min="0" step="500" value="12000" inputmode="numeric"></div>
+      </div>
+      <div class="outs" id="moneyOut" aria-live="polite"></div>
+      <div class="ex">ค่าเริ่มต้นเป็นตัวอย่าง แก้เป็นตัวเลขของคุณ ผลคำนวณอยู่ในเครื่องคุณเท่านั้น</div>
+    </div>
+
+    <h3>เรื่องที่ควรระวัง</h3>
+    <div class="grid">
+      <div class="panel"><h4>ผลตอบแทนสูงและการันตี</h4><p>ถ้าฟังดูดีเกินจริง มักเป็นแชร์ลูกโซ่หรือหลอกลงทุน ตรวจชื่อผู้ให้บริการกับ ก.ล.ต. ก่อนโอนเงินทุกครั้ง</p></div>
+      <div class="panel"><h4>ซื้อเพราะกลัวพลาดโอกาส</h4><p>รอ 24–48 ชั่วโมงก่อนซื้อของชิ้นใหญ่ ถ้ายังอยากได้และจ่ายไหว ค่อยซื้อ</p></div>
+      <div class="panel"><h4>ผ่อน 0% ไม่ใช่ของฟรี</h4><p>รวมยอดผ่อนทั้งหมดเข้าไปในงบ ไม่ซื้อของเพราะผ่อนเดือนละน้อย</p></div>
+      <div class="panel"><h4>ลดหย่อนภาษี</h4><p>สิทธิ เงื่อนไข และวงเงินเปลี่ยนได้ ตรวจกับกรมสรรพากรหรือที่ปรึกษาภาษีก่อนซื้อผลิตภัณฑ์เพื่อลดหย่อน</p></div>
+    </div>
+  </section>
+
+  <!-- ===================== ความสัมพันธ์ ===================== -->
+  <section class="ch" id="people" data-g="people">
+    <div class="ch-head">
+      <div class="eyebrow">ความสัมพันธ์และการสื่อสาร</div>
+      <h2>ฟังเป็น พูดชัด และมีขอบเขตที่ดี</h2>
+      <p>ความสัมพันธ์ที่ดีเป็นหนึ่งในตัวทำนายความสุขและสุขภาพระยะยาวที่แข็งแรงที่สุด และทักษะทั้งหมดนี้ฝึกได้</p>
+    </div>
+
+    <h3>ทักษะหลัก 6 ข้อ</h3>
+    <div class="grid">
+      <div class="panel"><h4>ฟังเพื่อเข้าใจ</h4><p>วางโทรศัพท์ สบตา ไม่ขัด สรุปสิ่งที่ได้ยินก่อนตอบ เช่น "ที่เธอพูดคือ…ใช่ไหม" คนรู้สึกว่าถูกเข้าใจก่อนจะเปิดใจรับฟัง</p></div>
+      <div class="panel"><h4>พูดด้วยประโยค "ฉัน"</h4><p>"ฉันรู้สึกเหนื่อยเมื่อต้องทำงานบ้านคนเดียว ฉันอยากให้ช่วยล้างจาน" ได้ผลกว่า "เธอไม่เคยช่วยอะไรเลย"</p></div>
+      <div class="panel"><h4>ตั้งขอบเขตอย่างสุภาพ</h4><p>ปฏิเสธได้โดยไม่ต้องอธิบายยาว เช่น "ตอนนี้ฉันทำไม่ได้ แต่ช่วยพรุ่งนี้ได้" ขอบเขตที่ชัดช่วยให้ความสัมพันธ์อยู่ได้นาน</p></div>
+      <div class="panel"><h4>ขอโทษและซ่อมแซม</h4><p>ขอโทษตรง ๆ ระบุสิ่งที่ทำ ไม่ใส่ "แต่" แล้วบอกว่าจะเปลี่ยนอะไร และทำตามนั้น</p></div>
+      <div class="panel"><h4>รักษาเพื่อนด้วยการติดต่อเล็ก ๆ</h4><p>ส่งข้อความสั้น ๆ ถามสารทุกข์สุกดิบ นัดกินข้าวเดือนละครั้ง ความสม่ำเสมอสำคัญกว่าความยิ่งใหญ่</p></div>
+      <div class="panel"><h4>พูดต่อหน้าคนอื่น</h4><p>เรียงเป็น ประเด็น เหตุผล ตัวอย่าง แล้วสรุปประเด็นอีกครั้ง ซ้อมออกเสียงจริงและอัดวิดีโอดูตัวเอง ตื่นเต้นเป็นเรื่องปกติ</p></div>
+    </div>
+
+    <h3>สร้างความมั่นใจจากการลงมือ</h3>
+    <div class="list">
+      <div class="row"><h4>ทำสิ่งที่กลัวทีละขั้นเล็ก ๆ</h4><span class="tag good">หลักฐานดี</span><p>ความมั่นใจมาหลังลงมือ ไม่ใช่ก่อน เริ่มจากทักทายคนใหม่ ถามหนึ่งคำถามในที่ประชุม แล้วเพิ่มความยากทีละระดับ</p></div>
+      <div class="row"><h4>เปรียบเทียบกับตัวเองเมื่อเดือนก่อน</h4><span class="tag mid">หลักฐานพอใช้</span><p>การเทียบกับโซเชียลมีเดียเห็นแต่ภาพดีที่ผู้อื่นเลือกมาแสดง ลดเวลาเลื่อนดูและติดตามเฉพาะสิ่งที่ให้แรงบันดาลใจจริง</p></div>
+      <div class="row"><h4>รับคำติชมโดยแยกจากคุณค่าของตัวเอง</h4><span class="tag mid">หลักฐานพอใช้</span><p>ถามว่า "ข้อไหนที่ปรับได้เลย" มองคำติเป็นข้อมูลสำหรับพัฒนา</p></div>
+    </div>
+
+    <div class="doc" style="margin-top:20px">
+      <h4>สัญญาณที่ควรขอความช่วยเหลือ</h4>
+      <ul>
+        <li>ถูกควบคุม ข่มขู่ ทำร้ายร่างกายหรือจิตใจ หรือถูกบังคับให้ตัดขาดจากคนรอบข้าง</li>
+        <li>ถูกล่วงละเมิดหรือถูกกดดันทางเพศ ติดต่อสายด่วนช่วยเหลือสังคม 1300 หรือ 191 ในกรณีเร่งด่วน</li>
+        <li>ความเหงาหรือความขัดแย้งทำให้ใช้ชีวิตไม่ได้ ปรึกษานักจิตวิทยาหรือจิตแพทย์</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== แผน 30 วัน ===================== -->
+  <section class="ch" id="plan" data-g="plan">
+    <div class="ch-head">
+      <div class="eyebrow">ลงมือทำ</div>
+      <h2>แผน 30 วัน ขยับทีละนิด ครบทุกด้าน</h2>
+      <p>อย่าเริ่มทุกอย่างวันแรก เพิ่มสัปดาห์ละหนึ่งชั้น เมื่อชั้นก่อนหน้านิ่งแล้วค่อยเพิ่ม</p>
+    </div>
+
+    <div class="grid">
+      <div class="panel"><div class="kicker">สัปดาห์ 1</div><h4>รากฐาน</h4><p>นอนและตื่นเวลาเดิม ดื่มน้ำเมื่อกระหาย ทากันแดดทุกเช้า เดินเบา ๆ 15 นาทีต่อวัน ยังไม่ต้องเปลี่ยนอย่างอื่น</p></div>
+      <div class="panel"><div class="kicker">สัปดาห์ 2</div><h4>เติมระบบกินและขยับ</h4><p>เพิ่มผักครึ่งจาน โปรตีนทุกมื้อ ลดเครื่องดื่มหวานลงครึ่งหนึ่ง ออกกำลังกาย 3 วัน จดบันทึกความรู้สึก 5 นาทีก่อนนอน</p></div>
+      <div class="panel"><div class="kicker">สัปดาห์ 3</div><h4>เพิ่มทักษะและระบบเงิน</h4><p>ฝึกกล้ามเนื้อ 2 วัน จับเวลาโฟกัสวันละ 1–2 รอบเพื่อเรียนทักษะเดียว จดรายรับรายจ่ายและตั้งเงินสำรองก้อนแรก เริ่มผลิตภัณฑ์ดูแลผิวตัวใหม่ทีละอย่าง</p></div>
+      <div class="panel"><div class="kicker">สัปดาห์ 4</div><h4>เชื่อมคนและทบทวน</h4><p>นัดเจอเพื่อนหรือครอบครัวหนึ่งครั้ง ถ่ายรูปผิวเทียบกับวันแรก กลับไปทำวงล้อชีวิตใหม่ แล้วเลือกด้านถัดไปที่จะยกระดับ</p></div>
+    </div>
+
+    <h3>ภารกิจขั้นต่ำรายวัน</h3>
+    <div class="list">
+      <div class="row"><h4>นอนตรงเวลาตามที่ตั้งไว้</h4><span class="tag good">ทุกวัน</span><p>สิ่งเดียวที่ถ้าทำได้ ด้านอื่นง่ายขึ้นทั้งหมด</p></div>
+      <div class="row"><h4>ทากันแดดตอนเช้า</h4><span class="tag good">ทุกวัน</span><p>หน้า รอบตา คอ และหน้าอกส่วนบน</p></div>
+      <div class="row"><h4>เคลื่อนไหวอย่างน้อย 20 นาที</h4><span class="tag good">ทุกวัน</span><p>เดินเร็ว ปั่นจักรยาน หรือฝึกกล้ามเนื้อตามตาราง</p></div>
+      <div class="row"><h4>โปรตีนและผักในมื้อหลัก</h4><span class="tag good">ทุกวัน</span><p>เติมแทนการงดอาหาร</p></div>
+      <div class="row"><h4>ทบทวนวันนี้ 5 นาที</h4><span class="tag good">ทุกวัน</span><p>เขียนหนึ่งสิ่งที่ทำได้ดี หนึ่งสิ่งจะปรับพรุ่งนี้</p></div>
+    </div>
+
+    <h3>ติ๊กวันที่ทำภารกิจครบ</h3>
+    <p class="sub">แตะวันที่ที่ทำภารกิจขั้นต่ำครบ ถ้าพลาดไม่ต้องเริ่มใหม่ กลับมาแตะวันถัดไปได้เลย ข้อมูลเก็บในอุปกรณ์เครื่องนี้</p>
+    <div class="tool">
+      <div class="progress" style="width:100%"><span id="planText">0 / 30 วัน</span><div class="bar"><i id="planBar"></i></div></div>
+      <div class="days" id="planDays"></div>
+      <div class="ex" id="planStreak"></div>
+      <div class="row-btn"><button type="button" class="btn ghost" id="planReset">ล้างทั้งหมด</button></div>
+    </div>
+
+    <h3>ทบทวนประจำสัปดาห์: 4 คำถาม</h3>
+    <div class="two">
+      <div class="panel"><h4>1. อะไรไปได้ดี</h4><p>นับชัยชนะเล็ก ๆ ด้วย ความสม่ำเสมอเริ่มจากการเห็นความก้าวหน้า</p></div>
+      <div class="panel"><h4>2. อะไรติดขัด และเพราะอะไร</h4><p>มองที่ระบบก่อน เช่น เวลา สภาพแวดล้อม ไม่ใช่ตำหนิตัวเอง</p></div>
+      <div class="panel"><h4>3. จะปรับอะไรหนึ่งอย่าง</h4><p>เลือกการเปลี่ยนเดียวที่เล็กและทำได้ในสัปดาห์หน้า</p></div>
+      <div class="panel"><h4>4. ต้องการความช่วยเหลือจากใคร</h4><p>เพื่อน แพทย์ เภสัชกร โค้ช การขอความช่วยเหลือเป็นทักษะ ไม่ใช่ความอ่อนแอ</p></div>
+    </div>
+  </section>
+
+  <footer>
+    ข้อมูลในหน้านี้เป็นความรู้ทั่วไปเพื่อการดูแลตนเอง ไม่ใช่คำแนะนำทางการแพทย์ กฎหมาย หรือการลงทุนเฉพาะบุคคล ควรปรึกษาแพทย์ เภสัชกร นักโภชนาการ หรือที่ปรึกษาการเงินที่มีใบอนุญาต ก่อนตัดสินใจเรื่องสำคัญ
+  </footer>
+</main>
+
+<script>
+(function () {
+  /* ---------- theme ---------- */
+  var root = document.documentElement;
+  var btn = document.getElementById('themeBtn');
+  var modes = ['auto', 'light', 'dark'];
+  var names = { auto: 'ธีม: อัตโนมัติ', light: 'ธีม: สว่าง', dark: 'ธีม: มืด' };
+  var mode = 'auto';
+  try { mode = localStorage.getItem('sh-theme') || 'auto'; } catch (e) {}
+  if (modes.indexOf(mode) < 0) mode = 'auto';
+  function applyTheme() {
+    if (mode === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', mode);
+    btn.textContent = names[mode];
+  }
+  applyTheme();
+  btn.addEventListener('click', function () {
+    mode = modes[(modes.indexOf(mode) + 1) % modes.length];
+    try { localStorage.setItem('sh-theme', mode); } catch (e) {}
+    applyTheme();
+  });
+
+  /* ---------- quiz ---------- */
+  var T = {
+    p: {
+      name: 'ชนิดเม็ดสี',
+      text: 'ผิวใต้ตามีเม็ดสีมาก มักเกี่ยวกับพันธุกรรมและแสงแดด',
+      tips: ['ทากันแดดและใส่แว่นกันแดดทุกวัน', 'ลองวิตามินซี ไนอาซินาไมด์ หรือเรตินอยด์สูตรรอบดวงตา ใช้ทีละอย่าง', 'หยุดขยี้ตา และรักษาภูมิแพ้ถ้ามี', 'ถ้าไม่ดีขึ้นใน 3 เดือน ปรึกษาแพทย์ผิวหนังเรื่องยาหรือหัตถการ']
+    },
+    v: {
+      name: 'ชนิดหลอดเลือด',
+      text: 'ผิวบางทำให้เห็นเลือดดำ และมักแย่ลงเมื่ออดนอนหรือคัดจมูก',
+      tips: ['นอน 7–9 ชั่วโมงเวลาเดิม และหนุนหมอนสูงขึ้นเล็กน้อย', 'ประคบเย็น 5–10 นาทีตอนเช้า', 'รักษาอาการคัดจมูกหรือภูมิแพ้', 'เหนื่อยง่ายหรือซีดร่วมด้วย ให้ตรวจเลือดดูภาวะโลหิตจาง', 'ครีมคาเฟอีนอาจช่วยชั่วคราว']
+    },
+    s: {
+      name: 'ชนิดเงาจากโครงสร้าง',
+      text: 'เงาจากร่องใต้ตาหรือถุงใต้ตา ไม่ได้เกิดจากสีผิวเป็นหลัก',
+      tips: ['ลดเกลือและแอลกอฮอล์เพื่อลดบวมตอนเช้า', 'ประคบเย็นช่วยลดบวมได้ชั่วคราว', 'ครีมช่วยได้จำกัด ถ้าเงาชัดมากให้ปรึกษาแพทย์ผิวหนังหรือศัลยแพทย์ตกแต่งเรื่องหัตถการ', 'ทากันแดดเพื่อรักษาผิวที่บางลงตามอายุ']
+    }
+  };
+  var out = document.getElementById('quizOut');
+  document.getElementById('quizGo').addEventListener('click', function () {
+    var score = { p: 0, v: 0, s: 0 }, answered = 0;
+    ['q1', 'q2', 'q3'].forEach(function (n) {
+      var c = document.querySelector('input[name="' + n + '"]:checked');
+      if (c) { score[c.value]++; answered++; }
+    });
+    out.hidden = false;
+    if (answered < 3) { out.innerHTML = '<p>ตอบให้ครบ 3 ข้อก่อน แล้วกดดูผลอีกครั้ง</p>'; return; }
+    var max = Math.max(score.p, score.v, score.s);
+    var top = ['p', 'v', 's'].filter(function (k) { return score[k] === max; });
+    var html;
+    if (top.length === 1) {
+      var r = T[top[0]];
+      html = '<h4>แนวโน้ม: ' + r.name + '</h4><p>' + r.text + '</p><ul>' + r.tips.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>';
+    } else {
+      html = '<h4>แนวโน้ม: ชนิดผสม</h4><p>คำตอบของคุณชี้ไปหลายชนิดพร้อมกัน (' + top.map(function (k) { return T[k].name; }).join(' และ ') + ') เป็นเรื่องปกติ เริ่มจากสิ่งที่ปรับได้ง่ายก่อน</p><ul><li>นอนให้พอและทากันแดดทุกวัน</li><li>เลิกขยี้ตา ลดเกลือและแอลกอฮอล์</li><li>เพิ่มผลิตภัณฑ์ทีละอย่าง และดูผลที่ 8–12 สัปดาห์</li><li>ถ้าไม่ดีขึ้น พบแพทย์ผิวหนัง</li></ul>';
+    }
+    out.innerHTML = html;
+  });
+  document.getElementById('quizReset').addEventListener('click', function () {
+    Array.prototype.forEach.call(document.querySelectorAll('#quiz input'), function (i) { i.checked = false; });
+    out.hidden = true;
+  });
+
+  /* ---------- checklist ---------- */
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#ckBox input[data-ck]'));
+  var today = new Date();
+  var key = 'sh-ck-' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+  var saved = [];
+  try { saved = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { saved = []; }
+  boxes.forEach(function (b) { b.checked = saved.indexOf(b.getAttribute('data-ck')) >= 0; });
+  function ckUpdate() {
+    var done = boxes.filter(function (b) { return b.checked; });
+    document.getElementById('ckText').textContent = done.length + ' / ' + boxes.length + ' รายการวันนี้';
+    document.getElementById('ckBar').style.width = (boxes.length ? done.length / boxes.length * 100 : 0) + '%';
+    try { localStorage.setItem(key, JSON.stringify(done.map(function (b) { return b.getAttribute('data-ck'); }))); } catch (e) {}
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', ckUpdate); });
+  ckUpdate();
+
+  /* ---------- rhythm chart ---------- */
+  var W = 640, H = 280, L = 44, R = 16, TP = 28, B = 56;
+  function x(t) { return L + (W - L - R) * t / 24; }
+  function y(v) { return TP + (H - TP - B) * (1 - v); }
+  function cort(t) { return 0.1 + 0.9 * Math.exp(-Math.pow((t - 8) / 3.2, 2)); }
+  function mela(t) {
+    var d = Math.abs(t - 3); d = Math.min(d, 24 - d);
+    return 0.05 + 0.95 * Math.exp(-Math.pow(d / 2.8, 2));
+  }
+  function path(f) {
+    var p = '';
+    for (var t = 0; t <= 24.001; t += 0.25) { p += (t === 0 ? 'M' : 'L') + x(t).toFixed(1) + ' ' + y(f(t)).toFixed(1) + ' '; }
+    return p;
+  }
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+  [0, 6, 12, 18, 24].forEach(function (t) {
+    s += '<line x1="' + x(t) + '" y1="' + y(1) + '" x2="' + x(t) + '" y2="' + y(0) + '" style="stroke:var(--line)" stroke-width="1"/>';
+    s += '<text class="ct" x="' + x(t) + '" y="' + (y(0) + 20) + '" text-anchor="middle">' + ((t % 24) < 10 ? '0' : '') + (t % 24) + ':00</text>';
+  });
+  s += '<line x1="' + L + '" y1="' + y(0) + '" x2="' + (W - R) + '" y2="' + y(0) + '" style="stroke:var(--ink2)" stroke-width="1.5"/>';
+  s += '<text class="ct" x="' + (L - 8) + '" y="' + (y(1) + 4) + '" text-anchor="end">สูง</text>';
+  s += '<text class="ct" x="' + (L - 8) + '" y="' + (y(0) + 4) + '" text-anchor="end">ต่ำ</text>';
+  s += '<line x1="' + x(6.5) + '" y1="' + y(1) + '" x2="' + x(6.5) + '" y2="' + y(0) + '" style="stroke:var(--ink2)" stroke-width="1.5" stroke-dasharray="4 4"/>';
+  s += '<line x1="' + x(23) + '" y1="' + y(1) + '" x2="' + x(23) + '" y2="' + y(0) + '" style="stroke:var(--ink2)" stroke-width="1.5" stroke-dasharray="4 4"/>';
+  s += '<text class="ct" x="' + x(6.5) + '" y="' + (H - 8) + '" text-anchor="middle">ตื่น 06:30</text>';
+  s += '<text class="ct" x="' + x(23) + '" y="' + (H - 8) + '" text-anchor="middle">นอน 23:00</text>';
+  s += '<path d="' + path(mela) + '" fill="none" style="stroke:var(--accent)" stroke-width="3" stroke-linejoin="round"/>';
+  s += '<path d="' + path(cort) + '" fill="none" style="stroke:var(--warn)" stroke-width="3" stroke-linejoin="round"/>';
+  s += '<text class="cl" x="' + x(3) + '" y="' + (y(1) - 8) + '" text-anchor="middle">เมลาโทนิน</text>';
+  s += '<text class="cl" x="' + (x(8) + 10) + '" y="' + (y(1) - 8) + '" text-anchor="middle">คอร์ติซอล</text>';
+  s += '</svg>';
+  document.getElementById('rhythmBox').innerHTML = s;
+})();
+</script>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function num(id) { return parseFloat($(id).value); }
+  function fmt(n, d) { return Number(n).toLocaleString('th-TH', { maximumFractionDigits: d || 0 }); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function box(small, big) { return '<div><small>' + small + '</small><b>' + big + '</b></div>'; }
+  function note(t) { return '<div><small>' + t + '</small></div>'; }
+
+  /* ---------- nav scroll spy (by chapter group) ---------- */
+  var secs = Array.prototype.slice.call(document.querySelectorAll('section.ch'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.links a'));
+  var navBox = document.querySelector('.links');
+  var lastG = '';
+  function spy() {
+    var y = window.scrollY + 120, cur = secs[0];
+    secs.forEach(function (s) { if (s.offsetTop <= y) cur = s; });
+    var g = cur ? cur.getAttribute('data-g') : '';
+    if (g === lastG) return;
+    lastG = g;
+    links.forEach(function (a) {
+      if (a.getAttribute('data-g') === g) {
+        a.setAttribute('aria-current', 'true');
+        var left = a.offsetLeft - (navBox.clientWidth - a.offsetWidth) / 2;
+        try { navBox.scrollTo({ left: left, behavior: 'smooth' }); } catch (e) { navBox.scrollLeft = left; }
+      } else { a.removeAttribute('aria-current'); }
+    });
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  spy();
+
+  /* ---------- wheel of life ---------- */
+  var AREAS = [
+    ['skin', 'ผิว', '#eye'], ['hormone', 'ฮอร์โมน', '#hormone'], ['sleep', 'นอน', '#sleep'],
+    ['food', 'อาหาร', '#food'], ['move', 'ออกกำลัง', '#move'], ['mind', 'ใจ', '#mind'],
+    ['habit', 'นิสัยและเวลา', '#habit'], ['learn', 'เรียนรู้', '#learn'],
+    ['money', 'เงิน', '#money'], ['people', 'ความสัมพันธ์', '#people']
+  ];
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem('sh-wheel') || '{}') || {}; } catch (e) { saved = {}; }
+  AREAS.forEach(function (a) {
+    var el = $('w_' + a[0]);
+    var v = parseInt(saved[a[0]], 10);
+    if (v >= 1 && v <= 10) el.value = v;
+    el.addEventListener('input', drawWheel);
+  });
+  function drawWheel() {
+    var vals = {}, W = 520, H = 420, cx = 260, cy = 210, R = 120, n = AREAS.length, i;
+    AREAS.forEach(function (a) {
+      var el = $('w_' + a[0]);
+      vals[a[0]] = parseInt(el.value, 10);
+      el.nextElementSibling.textContent = el.value;
+    });
+    try { localStorage.setItem('sh-wheel', JSON.stringify(vals)); } catch (e) {}
+    function pt(k, r) { var ang = -Math.PI / 2 + 2 * Math.PI * k / n; return [cx + r * Math.cos(ang), cy + r * Math.sin(ang), Math.cos(ang)]; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+    [2, 4, 6, 8, 10].forEach(function (lv) {
+      var p = '';
+      for (i = 0; i < n; i++) { var q = pt(i, R * lv / 10); p += (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ' '; }
+      s += '<path d="' + p + 'Z" fill="none" style="stroke:var(--line)" stroke-width="1"/>';
+    });
+    for (i = 0; i < n; i++) {
+      var e = pt(i, R);
+      s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" style="stroke:var(--line)" stroke-width="1"/>';
+    }
+    var poly = '';
+    AREAS.forEach(function (a, k) { var q = pt(k, R * vals[a[0]] / 10); poly += (k ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ' '; });
+    s += '<path d="' + poly + 'Z" style="fill:var(--accent);fill-opacity:.25;stroke:var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>';
+    AREAS.forEach(function (a, k) {
+      var q = pt(k, R * vals[a[0]] / 10);
+      s += '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="4" style="fill:var(--accent)"/>';
+      var l = pt(k, R + 22), anchor = l[2] > 0.3 ? 'start' : (l[2] < -0.3 ? 'end' : 'middle');
+      s += '<text class="rl" x="' + l[0].toFixed(1) + '" y="' + (l[1] + 4).toFixed(1) + '" text-anchor="' + anchor + '">' + a[1] + ' ' + vals[a[0]] + '</text>';
+    });
+    s += '</svg>';
+    $('radarBox').innerHTML = s;
+
+    var sorted = AREAS.slice().sort(function (x, y) { return vals[x[0]] - vals[y[0]]; });
+    var allSame = vals[sorted[0][0]] === vals[sorted[n - 1][0]];
+    var f = '';
+    if (allSame) {
+      f = '<span>คะแนนเท่ากันทุกด้าน เริ่มที่</span><a class="chip" href="#sleep">นอน</a>';
+    } else {
+      f = '<span>เริ่มยกด้านที่ต่ำสุด:</span>';
+      sorted.slice(0, 2).forEach(function (a) { f += '<a class="chip" href="' + a[2] + '">' + a[1] + ' (' + vals[a[0]] + ')</a>'; });
+    }
+    $('focusBox').innerHTML = f;
+  }
+  drawWheel();
+
+  /* ---------- sleep calculator ---------- */
+  function sleepCalc() {
+    var v = $('wakeT').value, out = $('sleepOut');
+    if (!v) { out.innerHTML = note('เลือกเวลาตื่นก่อน'); return; }
+    var p = v.split(':'), wake = parseInt(p[0], 10) * 60 + parseInt(p[1], 10), h = '';
+    [6, 5, 4].forEach(function (c) {
+      var m = (((wake - c * 90 - 15) % 1440) + 1440) % 1440;
+      h += box('เข้านอน · ' + c + ' รอบ ≈ ' + (c * 1.5) + ' ชม.', pad(Math.floor(m / 60)) + ':' + pad(m % 60));
+    });
+    out.innerHTML = h;
+  }
+  $('wakeT').addEventListener('input', sleepCalc);
+  sleepCalc();
+
+  /* ---------- nutrition calculator ---------- */
+  function nut() {
+    var out = $('nutOut');
+    var a = num('nAge'), w = num('nW'), h = num('nH'), f = parseFloat($('nAct').value), male = $('nSex').value === 'm';
+    if (!(a >= 18 && a <= 90 && w >= 30 && w <= 250 && h >= 120 && h <= 230)) {
+      out.innerHTML = note('กรอกอายุ 18–90 ปี น้ำหนัก 30–250 กก. และส่วนสูง 120–230 ซม.');
+      return;
+    }
+    var bmr = 10 * w + 6.25 * h - 5 * a + (male ? 5 : -161), tdee = bmr * f;
+    out.innerHTML =
+      box('พลังงานที่ร่างกายใช้ขณะพัก', fmt(Math.round(bmr / 10) * 10) + ' กิโลแคลอรี') +
+      box('พลังงานที่ใช้ทั้งวัน (ค่าประมาณ)', fmt(Math.round(tdee / 10) * 10) + ' กิโลแคลอรี') +
+      box('โปรตีนต่อวัน (ขั้นต่ำถึงถ้าออกกำลังกายประจำ)', fmt(Math.round(0.8 * w)) + '–' + fmt(Math.round(1.6 * w)) + ' กรัม') +
+      box('น้ำต่อวันโดยประมาณ', fmt(30 * w / 1000, 1) + '–' + fmt(35 * w / 1000, 1) + ' ลิตร');
+  }
+  ['nSex', 'nAge', 'nW', 'nH', 'nAct'].forEach(function (id) { $(id).addEventListener('input', nut); });
+  nut();
+
+  /* ---------- breathing ---------- */
+  var PAT = {
+    '46': [['หายใจเข้า', 4, 1], ['หายใจออก', 6, 0.6]],
+    'box': [['หายใจเข้า', 4, 1], ['กลั้น', 4, 1], ['หายใจออก', 4, 0.6], ['กลั้น', 4, 0.6]],
+    '478': [['หายใจเข้า', 4, 1], ['กลั้น', 7, 1], ['หายใจออก', 8, 0.6]]
+  };
+  var bOn = false, bTimer = null, bi = 0, remain = 0, curName = '';
+  var dot = $('breathDot'), btxt = $('breathTxt'), bbtn = $('breathBtn');
+  function phase() {
+    var pat = PAT[$('bPat').value], ph = pat[bi % pat.length];
+    curName = ph[0]; remain = ph[1];
+    dot.style.transitionDuration = ph[1] + 's';
+    dot.style.transform = 'scale(' + ph[2] + ')';
+    btxt.textContent = curName + ' ' + remain;
+  }
+  function bStop() {
+    bOn = false; clearInterval(bTimer); bTimer = null;
+    dot.style.transitionDuration = '1s'; dot.style.transform = 'scale(.6)';
+    btxt.textContent = 'พร้อมเริ่ม'; bbtn.textContent = 'เริ่ม';
+  }
+  function bStart() {
+    bOn = true; bi = 0; bbtn.textContent = 'หยุด';
+    phase();
+    bTimer = setInterval(function () {
+      remain--;
+      if (remain <= 0) { bi++; phase(); } else { btxt.textContent = curName + ' ' + remain; }
+    }, 1000);
+  }
+  bbtn.addEventListener('click', function () { if (bOn) bStop(); else bStart(); });
+  $('bPat').addEventListener('change', function () { if (bOn) { bStop(); bStart(); } });
+
+  /* ---------- pomodoro ---------- */
+  var pm = { mode: 'focus', left: 1500, on: false, end: 0, t: null, count: 0 };
+  function pDur() { return pm.mode === 'focus' ? 1500 : (pm.count > 0 && pm.count % 4 === 0 ? 900 : 300); }
+  function pRender() {
+    $('pomoDial').textContent = pad(Math.floor(pm.left / 60)) + ':' + pad(pm.left % 60);
+    $('pomoMode').textContent = pm.mode === 'focus' ? 'โฟกัส' : 'พัก';
+    $('pomoCount').textContent = 'รอบที่เสร็จตั้งแต่เปิดหน้านี้: ' + pm.count;
+    $('pomoGo').textContent = pm.on ? 'หยุดชั่วคราว' : 'เริ่ม';
+  }
+  function pStop() { pm.on = false; clearInterval(pm.t); pm.t = null; }
+  function pTick() {
+    var left = Math.round((pm.end - Date.now()) / 1000);
+    if (left <= 0) {
+      pStop();
+      if (pm.mode === 'focus') { pm.count++; pm.mode = 'break'; } else { pm.mode = 'focus'; }
+      pm.left = pDur();
+    } else { pm.left = left; }
+    pRender();
+  }
+  $('pomoGo').addEventListener('click', function () {
+    if (pm.on) { pStop(); } else { pm.on = true; pm.end = Date.now() + pm.left * 1000; pm.t = setInterval(pTick, 250); }
+    pRender();
+  });
+  $('pomoSkip').addEventListener('click', function () { pStop(); pm.mode = pm.mode === 'focus' ? 'break' : 'focus'; pm.left = pDur(); pRender(); });
+  $('pomoReset').addEventListener('click', function () { pStop(); pm.left = pDur(); pRender(); });
+  pRender();
+
+  /* ---------- review schedule ---------- */
+  function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  var rv = $('rvDate');
+  rv.value = iso(new Date());
+  function rvDraw() {
+    var out = $('rvOut');
+    if (!rv.value) { out.innerHTML = note('เลือกวันที่ก่อน'); return; }
+    var p = rv.value.split('-'), d0 = new Date(+p[0], +p[1] - 1, +p[2]), h = '';
+    [1, 3, 7, 14, 30].forEach(function (k, idx) {
+      var d = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + k);
+      h += box('ทบทวนครั้งที่ ' + (idx + 1) + ' · หลัง ' + k + ' วัน', d.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short' }));
+    });
+    out.innerHTML = h;
+  }
+  rv.addEventListener('input', rvDraw);
+  rvDraw();
+
+  /* ---------- money ---------- */
+  function money() {
+    var out = $('moneyOut'), inc = num('mInc'), exp = num('mExp');
+    if (!(inc > 0) || !(exp >= 0)) { out.innerHTML = note('กรอกรายได้มากกว่า 0 และค่าใช้จ่ายจำเป็น'); return; }
+    var months = (exp * 3) / (inc * 0.2);
+    var h =
+      box('จำเป็น 50%', fmt(inc * 0.5) + ' บาท') +
+      box('อยากได้ 30%', fmt(inc * 0.3) + ' บาท') +
+      box('ออมและชำระหนี้ 20%', fmt(inc * 0.2) + ' บาท') +
+      box('เงินสำรอง 3 เดือน', fmt(exp * 3) + ' บาท') +
+      box('เงินสำรอง 6 เดือน', fmt(exp * 6) + ' บาท') +
+      box('เก็บ 20% ของรายได้ ถึงเป้า 3 เดือนใน', fmt(months, 1) + ' เดือน');
+    if (exp > inc * 0.5) h += note('ค่าใช้จ่ายจำเป็นสูงกว่า 50% ของรายได้ ลองดูค่าที่อยู่ ค่าผ่อน และหนี้ก่อน หรือหาทางเพิ่มรายได้');
+    out.innerHTML = h;
+  }
+  ['mInc', 'mExp'].forEach(function (id) { $(id).addEventListener('input', money); });
+  money();
+
+  /* ---------- 30-day plan ---------- */
+  var done = [];
+  try { done = JSON.parse(localStorage.getItem('sh-plan') || '[]') || []; } catch (e) { done = []; }
+  var daysBox = $('planDays');
+  for (var d = 1; d <= 30; d++) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.textContent = d; b.setAttribute('data-d', d);
+    b.setAttribute('aria-label', 'วันที่ ' + d);
+    b.setAttribute('aria-pressed', done.indexOf(d) >= 0 ? 'true' : 'false');
+    daysBox.appendChild(b);
+  }
+  function planStats() {
+    var set = {}, best = 0, run = 0, k;
+    done.forEach(function (x) { set[x] = 1; });
+    for (k = 1; k <= 30; k++) { if (set[k]) { run++; if (run > best) best = run; } else run = 0; }
+    $('planText').textContent = done.length + ' / 30 วัน';
+    $('planBar').style.width = (done.length / 30 * 100) + '%';
+    $('planStreak').textContent = done.length ? 'ทำต่อเนื่องยาวสุด ' + best + ' วัน' : 'แตะวันที่ 1 เมื่อทำภารกิจวันนี้ครบ';
+  }
+  daysBox.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (!t || t.tagName !== 'BUTTON') return;
+    var day = parseInt(t.getAttribute('data-d'), 10), idx = done.indexOf(day);
+    if (idx >= 0) done.splice(idx, 1); else done.push(day);
+    t.setAttribute('aria-pressed', idx >= 0 ? 'false' : 'true');
+    try { localStorage.setItem('sh-plan', JSON.stringify(done)); } catch (e) {}
+    planStats();
+  });
+  var rbtn = $('planReset'), rtimer = null;
+  rbtn.addEventListener('click', function () {
+    if (rtimer) {
+      clearTimeout(rtimer); rtimer = null; rbtn.textContent = 'ล้างทั้งหมด';
+      done = [];
+      Array.prototype.forEach.call(daysBox.children, function (c) { c.setAttribute('aria-pressed', 'false'); });
+      try { localStorage.setItem('sh-plan', '[]'); } catch (e) {}
+      planStats();
+    } else {
+      rbtn.textContent = 'กดอีกครั้งเพื่อยืนยัน';
+      rtimer = setTimeout(function () { rtimer = null; rbtn.textContent = 'ล้างทั้งหมด'; }, 4000);
+    }
+  });
+  planStats();
+})();
+</script>
+<script>
+(function () {
+  var t = document.getElementById('acType'), c = document.getElementById('acCount'), out = document.getElementById('acOut');
+  if (!t || !c || !out) return;
+  function draw() {
+    var type = t.value, cnt = c.value, title, text, see;
+    if (type === 'comedo') {
+      title = 'แนวโน้ม: สิวอุดตัน (หัวขาวหรือหัวดำ)';
+      text = 'เริ่มจากล้างหน้าอ่อนโยน แล้วใช้อะดาพาลีน 0.1% ตอนกลางคืน หรือกรดซาลิไซลิกวันละครั้ง ต่อเนื่อง 8–12 สัปดาห์ ไม่บีบแรง ๆ';
+      see = cnt === 'many' ? 'จำนวนมาก ควรปรึกษาเภสัชกรหรือแพทย์ผิวหนังเพื่อเลือกสูตรที่เหมาะ' : 'ถ้าไม่ดีขึ้นใน 3 เดือน ให้พบแพทย์';
+    } else if (type === 'inflam') {
+      title = 'แนวโน้ม: สิวอักเสบ';
+      if (cnt === 'few') {
+        text = 'เริ่มเบนซอยล์เพอร็อกไซด์ 2.5–5% ตอนเช้า วันเว้นวัน และอะดาพาลีน 0.1% ตอนกลางคืน ทาทั่วบริเวณที่เป็นสิว ต่อเนื่อง 8–12 สัปดาห์';
+        see = 'ถ้าไม่ดีขึ้นหรือเริ่มมีแผลเป็น ให้พบแพทย์';
+      } else if (cnt === 'mid') {
+        text = 'เริ่มจากสูตรด้านบนได้ แต่สิวระดับนี้มักต้องยาทาผสมที่แพทย์หรือเภสัชกรช่วยเลือก';
+        see = 'แนะนำปรึกษาเภสัชกรหรือแพทย์ผิวหนังตั้งแต่ต้น';
+      } else {
+        text = 'สิวอักเสบกระจายทั่วใบหน้ามีโอกาสเกิดแผลเป็น ระหว่างรอพบแพทย์ ล้างหน้าอ่อนโยน กันแดด และไม่บีบ';
+        see = 'ควรพบแพทย์ผิวหนัง';
+      }
+    } else if (type === 'deep') {
+      title = 'แนวโน้ม: สิวก้อนลึก';
+      text = 'สิวชนิดนี้ใช้ยาทาที่ซื้อเองมักไม่พอ และเสี่ยงแผลเป็นถาวร ไม่บีบหรือแคะ ประคบอุ่นเบา ๆ ได้เพื่อลดความเจ็บ';
+      see = 'ควรพบแพทย์ผิวหนังเร็วที่สุด';
+    } else if (type === 'yeast') {
+      title = 'แนวโน้ม: เข้าได้กับสิวผดหรือสิวยีสต์';
+      text = 'สิวกลุ่มนี้มักไม่ตอบสนองต่อยาสิวทั่วไปและยาปฏิชีวนะ ต้องใช้ยาต้านเชื้อรา ระหว่างนี้ล้างหน้าหลังเหงื่อออก ไม่ใช้น้ำมันบำรุงผมที่โดนหน้า และเปลี่ยนเสื้อผ้าที่เปียกเหงื่อ';
+      see = 'ควรให้แพทย์ยืนยันก่อนเริ่มยา';
+    } else {
+      title = 'แนวโน้ม: อาจเป็นผิวหนังอักเสบรอบปากหรือโรสเซเชีย ไม่ใช่สิวธรรมดา';
+      text = 'หยุดครีมสเตียรอยด์ที่ซื้อใช้เอง ไม่ใช้ยาสิวแรง ๆ ล้างหน้าอ่อนโยน และใช้กันแดดสูตรอ่อนโยน การทายาสิวอาจทำให้แย่ลง';
+      see = 'ควรพบแพทย์ผิวหนัง';
+    }
+    out.innerHTML = '<h4></h4><p class="a"></p><p class="b" style="margin-top:8px"></p>';
+    out.querySelector('h4').textContent = title;
+    out.querySelector('.a').textContent = text;
+    out.querySelector('.b').textContent = 'การพบแพทย์: ' + see;
+  }
+  t.addEventListener('input', draw);
+  c.addEventListener('input', draw);
+  draw();
+})();
+</script>
+
+</body></html>
